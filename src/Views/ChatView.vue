@@ -1,5 +1,8 @@
 <template>
   <div class="chat-view">
+    <div class="chat-view__logo">
+      <vue-logo />
+    </div>
     <div class="chat-view__process">
       <vue-chat-process ref="chatProcess">
         <template v-for="group of groupedMessages" :key="group.question.id">
@@ -7,11 +10,21 @@
             <vue-message
               :message="group.question.messages"
               class="question-message"
+              :class="{
+                'question-message__disabled':
+                  group.question.id < internalHistoryMessages.length,
+              }"
+              :key="group.question.id"
             />
             <vue-response
               v-if="group.response"
               :response="group.response.response"
               class="response-message"
+              :class="{
+                'response-message__disabled':
+                  group.response.id < internalResponses.length,
+              }"
+              :key="group.response.id"
             />
           </div>
         </template>
@@ -30,6 +43,7 @@ import type { ChatMessage } from "../store/messageStore";
 import VueChatProcess from "../components/Chat/VueChatProcess.vue";
 import { useResponsesAIStore } from "../store/responsesAIStore";
 import VueResponse from "../components/Chat/VueResponse.vue";
+import VueLogo from "../components/Logo/VueLogo.vue";
 
 const chatProcess = ref<HTMLElement>();
 
@@ -74,6 +88,20 @@ watch(groupedMessages, scrollToBottom, { deep: true });
     height: 100%;
     padding-bottom: 20px;
   }
+  &__logo {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 30px;
+    position: absolute;
+    top: 0px;
+    left: 0;
+    right: 0;
+    z-index: 10;
+    background: var(--black);
+    padding: 20px;
+    box-shadow: 0px 10px 20px 12px var(--black);
+  }
 }
 </style>
 
@@ -102,7 +130,6 @@ watch(groupedMessages, scrollToBottom, { deep: true });
   gap: 20px;
   margin-bottom: 20px;
   animation: messageAppear 0.3s ease-out;
-
   &:first-child {
     margin-top: 0;
   }
@@ -122,10 +149,20 @@ watch(groupedMessages, scrollToBottom, { deep: true });
 .question-message {
   align-self: flex-end;
   max-width: 80%;
+  &__disabled {
+    background-color: var(--dark-violet) !important;
+    color: var(--violet) !important;
+    &::after {
+      border-top-color: var(--dark-violet) !important;
+    }
+  }
 }
 
 .response-message {
   align-self: flex-start;
   max-width: 80%;
+  &__disabled {
+    opacity: 0.6;
+  }
 }
 </style>

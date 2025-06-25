@@ -12,8 +12,11 @@ import VueLogo from "../Logo/VueLogo.vue";
 <style lang="scss">
 h1 {
   text-align: center;
+  & p {
+    margin-bottom: 5px;
+  }
   @media (max-width: 820px) {
-    font-size: 30px;
+    font-size: 25px;
   }
 }
 </style>
