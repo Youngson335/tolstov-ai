@@ -30,8 +30,28 @@ const emit = defineEmits(["sticker-changed"]);
 
 const activeIndex = ref(0);
 const visibleStickers = ref<Sticker[]>([]);
+const imagesLoaded = ref(false);
 
 let intervalId: number;
+
+// Функция для предзагрузки изображений
+const preloadImages = async () => {
+  const promises = props.stickers.map((sticker) => {
+    return new Promise((resolve) => {
+      const img = new Image();
+      img.src = sticker.src;
+      img.onload = resolve;
+      img.onerror = resolve; // Продолжаем даже если одно изображение не загрузилось
+    });
+  });
+
+  await Promise.all(promises);
+  imagesLoaded.value = true;
+  initStickers();
+  if (props.stickers.length > 1) {
+    startAnimation();
+  }
+};
 
 // Инициализация первого стикера
 const initStickers = () => {
@@ -42,6 +62,8 @@ const initStickers = () => {
 
 // Переключение на следующий стикер
 const nextSticker = () => {
+  if (!imagesLoaded.value) return;
+
   activeIndex.value = (activeIndex.value + 1) % props.stickers.length;
   visibleStickers.value = [props.stickers[activeIndex.value]];
   emit("sticker-changed", activeIndex.value);
@@ -64,18 +86,14 @@ const stopAnimation = () => {
 watch(
   () => props.stickers,
   (newStickers) => {
-    initStickers();
-    if (newStickers.length > 1) {
-      startAnimation();
-    }
+    imagesLoaded.value = false;
+    preloadImages();
   },
   { immediate: true }
 );
 
 onMounted(() => {
-  if (props.stickers.length > 1) {
-    startAnimation();
-  }
+  preloadImages();
 });
 
 onUnmounted(() => {

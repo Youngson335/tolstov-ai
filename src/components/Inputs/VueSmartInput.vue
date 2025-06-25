@@ -30,10 +30,7 @@
 
       <span v-if="isFocused">
         {{ currentMessage }}
-        <span
-          class="cursor"
-          :class="{ cursor__disabled: isProcessResponse }"
-        ></span>
+        <span class="cursor"></span>
       </span>
       <span v-else>{{ currentMessage }}</span>
 
@@ -192,6 +189,7 @@ if (chatStore.chatHistory.length <= 0) {
     vertical-align: middle;
     position: relative;
     top: -1px;
+    left: -1.5px;
     &__disabled {
       display: none;
     }

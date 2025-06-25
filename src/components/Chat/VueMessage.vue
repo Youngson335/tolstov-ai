@@ -25,9 +25,8 @@ const internalMessages = computed(() => {
 <style lang="scss" scoped>
 .message-bubble {
   position: relative;
-  max-width: 80%;
   padding: 12px 16px;
-  margin: 8px 0;
+  margin: 10px 0;
   border-radius: 18px;
   line-height: 1.4;
   word-break: break-word;

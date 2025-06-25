@@ -3,6 +3,7 @@
     <div class="home-view__start">
       <vue-welcome />
       <vue-smart-input :is-chat-page="false" />
+      <p>Слишком "умная" нейросеть</p>
     </div>
     <div class="home-view__block">
       <div class="home-view__sticker">
@@ -11,9 +12,15 @@
       <div class="home-view__description">
         <vue-message
           :message="[
-            'Данная нейросеть создана для вашего развития! Развитие - это не про быстро!',
+            'Данная нейросеть создана для вашего развития! Чуть позже поймете, как она это делает)',
           ]"
         />
+      </div>
+      <div>
+        <div v-if="isUserRegister" class="home-view__avatar">
+          <vue-user-avatar />
+        </div>
+        <vue-auth-form v-else />
       </div>
     </div>
   </div>
@@ -23,6 +30,9 @@
 import VueWelcome from "../components/Welcome/VueWelcome.vue";
 import VueSmartInput from "../components/Inputs/VueSmartInput.vue";
 import VueMessage from "../components/Chat/VueMessage.vue";
+import VueAuthForm from "../components/Forms/VueAuthForm.vue";
+import VueUserAvatar from "../components/User/VueUserAvatar.vue";
+import { useUserInfoStore } from "../store/userInfoStore";
 import {
   sticker_1,
   sticker_2,
@@ -36,6 +46,14 @@ import {
 } from "../assets/stickers";
 
 import VueAnimatedStickers from "../components/UI/VueAnimatedStickers.vue";
+import { computed } from "vue";
+
+const userInfoStore = useUserInfoStore();
+
+const isUserRegister = computed(() => {
+  return userInfoStore.isUser;
+});
+
 const stickers = [
   { id: 1, src: sticker_1 },
   { id: 2, src: sticker_2 },
@@ -50,16 +68,31 @@ const stickers = [
 </script>
 
 <style lang="scss" scoped>
+.auth-block {
+  padding: 20px;
+}
 .home-view {
   height: 100vh;
   display: flex;
   justify-content: space-between;
   align-items: center;
   gap: 30px;
+  @media (max-width: 820px) {
+    flex-direction: column;
+  }
 
   &__block {
     display: flex;
     flex-direction: column;
+    @media (max-width: 820px) {
+      height: 100%;
+      width: 100%;
+    }
+  }
+
+  &__avatar {
+    display: flex;
+    justify-content: end;
   }
 
   &__start {
@@ -71,25 +104,30 @@ const stickers = [
     border-right: 3px solid var(--light-gray);
     padding-right: 10%;
     @media (max-width: 820px) {
-      flex-direction: column-reverse;
       border: none;
       padding-right: 0;
-      height: 20%;
     }
 
     & .vue-welcome {
       margin-bottom: 50px;
-      @media (max-width: 820px) {
-        margin-bottom: 0;
-        h1 {
-          text-align: start;
-        }
-      }
+      // @media (max-width: 820px) {
+      //   margin-bottom: 0;
+      //   h1 {
+      //     text-align: start;
+      //   }
+      // }
     }
     & .vue-smart-input {
-      @media (max-width: 820px) {
-        margin-bottom: 50px;
-      }
+      margin-bottom: 10px;
+      // @media (max-width: 820px) {
+      //   margin-bottom: 50px;
+      // }
+    }
+    & p {
+      font-size: 14px;
+      color: var(--light-gray);
+      font-weight: 100;
+      text-align: start;
     }
   }
 
@@ -124,9 +162,9 @@ const stickers = [
     }
   }
 
-  @media (max-width: 820px) {
-    flex-direction: column-reverse;
-    justify-content: center;
-  }
+  // @media (max-width: 820px) {
+  //   flex-direction: column-reverse;
+  //   justify-content: center;
+  // }
 }
 </style>

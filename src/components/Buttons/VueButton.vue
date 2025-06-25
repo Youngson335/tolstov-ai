@@ -1,0 +1,40 @@
+<template>
+  <button class="vue-button" type="button" :disabled="!props.enabled">
+    <slot />
+  </button>
+</template>
+<script lang="ts" setup>
+import { defineProps, withDefaults } from "vue";
+
+const props = withDefaults(
+  defineProps<{
+    enabled?: boolean;
+  }>(),
+  {
+    enabled: true,
+  }
+);
+</script>
+<style lang="scss">
+.vue-button {
+  border: none;
+  background-color: var(--violet);
+  color: var(--white);
+  padding: 12px 16px;
+  border-radius: 18px;
+  width: 100%;
+  cursor: pointer;
+  transition: all 0.4s ease;
+  &:hover {
+    opacity: 0.7;
+    transition: all 0.4s ease;
+  }
+  &:active {
+    scale: 1.03;
+    transition: all 0.4s ease;
+  }
+  &:disabled {
+    opacity: 0.5;
+  }
+}
+</style>
