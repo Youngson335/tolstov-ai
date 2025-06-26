@@ -35,8 +35,10 @@ const internalPlaceholder = computed(() => {
   border-radius: 18px;
   color: var(--white);
   outline: none;
+  font-size: 16px;
   &::placeholder {
     color: var(--light-gray);
+    font-size: 16px;
   }
 }
 </style>
