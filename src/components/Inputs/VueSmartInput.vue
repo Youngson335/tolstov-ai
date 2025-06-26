@@ -49,7 +49,14 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, onMounted, nextTick, computed, defineProps } from "vue";
+import {
+  ref,
+  onMounted,
+  nextTick,
+  computed,
+  defineProps,
+  onBeforeUnmount,
+} from "vue";
 import { useChatStore } from "../../store/messageStore";
 import { arrow_icon } from "../../assets/icons";
 import { useRoute } from "vue-router";
@@ -84,6 +91,21 @@ const handleEnter = (e: KeyboardEvent) => {
   }
 };
 
+const handleKeyboardOpen = () => {
+  if (!props.isChatPage) return;
+
+  // Прокручиваем страницу к полю ввода
+  setTimeout(() => {
+    const inputElement = textarea.value;
+    if (inputElement) {
+      inputElement.scrollIntoView({
+        behavior: "smooth",
+        block: "center",
+      });
+    }
+  }, 300);
+};
+
 const handleDelete = (e: KeyboardEvent) => {
   if (currentMessage.value === "" && chatStore.currentMessages.length > 0) {
     e.preventDefault();
@@ -111,7 +133,14 @@ const sendMessages = async () => {
 onMounted(() => {
   textarea.value?.addEventListener("focus", () => {
     isFocused.value = true;
+    handleKeyboardOpen();
   });
+
+  window.addEventListener("resize", handleKeyboardOpen);
+});
+
+onBeforeUnmount(() => {
+  window.removeEventListener("resize", handleKeyboardOpen);
 });
 
 //по хорошему этот блок кода нужно вынести в другое место

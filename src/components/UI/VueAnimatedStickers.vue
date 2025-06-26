@@ -4,13 +4,15 @@
       <img
         v-for="(sticker, index) in visibleStickers"
         :key="sticker.id"
-        :src="sticker.src"
+        :src="currentStickerSrc"
         alt=""
         class="sticker"
         :style="{
           zIndex: stickers.length - index,
           ...stickerStyle,
         }"
+        loading="lazy"
+        @load="onImageLoaded"
       />
     </transition-group>
   </div>
@@ -26,23 +28,23 @@ interface Sticker {
 
 const props = defineProps<{
   stickers: Sticker[];
-  interval?: number; // время между переходами в ms
-  position?: "left" | "right" | "top" | "bottom"; // позиция появления
-  align?: "start" | "center" | "end" | "unset"; // выравнивание
-  width?: string; // ширина стикера
-  height?: string; // высота стикера
-  containerHeight?: string; // высота контейнера
+  interval?: number;
+  position?: "left" | "right" | "top" | "bottom";
+  align?: "start" | "center" | "end" | "unset";
+  width?: string;
+  height?: string;
+  containerHeight?: string;
 }>();
 
 const emit = defineEmits(["sticker-changed"]);
 
 const activeIndex = ref(0);
 const visibleStickers = ref<Sticker[]>([]);
-const imagesLoaded = ref(false);
-
+const currentStickerSrc = ref("");
+const isCurrentImageLoaded = ref(false);
 let intervalId: number;
 
-// Стили контейнера
+// Стили и маппинги (остаются без изменений)
 const containerStyle = computed(() => ({
   height: props.containerHeight || "120px",
   justifyContent: alignMap[props.align || "end"],
@@ -52,7 +54,6 @@ const containerStyle = computed(() => ({
       : "unset",
 }));
 
-// Стили стикера
 const stickerStyle = computed(() => ({
   width: props.width || "100px",
   height: props.height || "auto",
@@ -60,12 +61,10 @@ const stickerStyle = computed(() => ({
   [oppositePositionMap[props.position || "right"]]: "unset",
 }));
 
-// Название анимации в зависимости от позиции
 const transitionName = computed(
   () => `sticker-animation-${props.position || "right"}`
 );
 
-// Маппинги для удобства
 const positionMap = {
   left: {
     prop: "left",
@@ -103,66 +102,63 @@ const alignMap = {
   unset: "unset",
 };
 
-// Функция для предзагрузки изображений
-const preloadImages = async () => {
-  const promises = props.stickers.map((sticker) => {
-    return new Promise((resolve) => {
-      const img = new Image();
-      img.src = sticker.src;
-      img.onload = resolve;
-      img.onerror = resolve;
-    });
-  });
-
-  await Promise.all(promises);
-  imagesLoaded.value = true;
-  initStickers();
-  if (props.stickers.length > 1) {
-    startAnimation();
-  }
+// Загрузка текущего изображения
+const loadCurrentImage = () => {
+  isCurrentImageLoaded.value = false;
+  currentStickerSrc.value = props.stickers[activeIndex.value]?.src || "";
 };
 
-// Инициализация первого стикера
-const initStickers = () => {
-  if (props.stickers.length > 0) {
-    visibleStickers.value = [props.stickers[0]];
-  }
+// Обработчик загрузки изображения
+const onImageLoaded = () => {
+  isCurrentImageLoaded.value = true;
 };
 
 // Переключение на следующий стикер
 const nextSticker = () => {
-  if (!imagesLoaded.value) return;
+  if (!isCurrentImageLoaded.value) return;
 
   activeIndex.value = (activeIndex.value + 1) % props.stickers.length;
   visibleStickers.value = [props.stickers[activeIndex.value]];
   emit("sticker-changed", activeIndex.value);
+  loadCurrentImage();
 };
 
-// Запуск автоматического переключения
+// Запуск анимации
 const startAnimation = () => {
   stopAnimation();
-  intervalId = setInterval(nextSticker, props.interval ?? 3000);
+  if (props.stickers.length > 1) {
+    intervalId = setInterval(nextSticker, props.interval ?? 3000);
+  }
 };
 
-// Остановка анимации
 const stopAnimation = () => {
   if (intervalId) {
     clearInterval(intervalId);
   }
 };
 
-// Реакция на изменение входного массива стикеров
+// Инициализация
+const initStickers = () => {
+  if (props.stickers.length > 0) {
+    activeIndex.value = 0;
+    visibleStickers.value = [props.stickers[0]];
+    loadCurrentImage();
+    startAnimation();
+  }
+};
+
 watch(
   () => props.stickers,
-  () => {
-    imagesLoaded.value = false;
-    preloadImages();
+  (newStickers) => {
+    if (newStickers.length > 0) {
+      initStickers();
+    }
   },
   { immediate: true }
 );
 
 onMounted(() => {
-  preloadImages();
+  initStickers();
 });
 
 onUnmounted(() => {
