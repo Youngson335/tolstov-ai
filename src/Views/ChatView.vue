@@ -14,6 +14,11 @@
                 'question-message__disabled':
                   group.question.id < internalHistoryMessages.length,
               }"
+              :is-animate="
+                group.question.id < internalHistoryMessages.length
+                  ? false
+                  : true
+              "
               :key="group.question.id"
             />
             <vue-response
@@ -30,6 +35,10 @@
         </template>
       </vue-chat-process>
       <vue-smart-input @new-message="scrollToBottom" />
+      <p class="chat-view__description">
+        Перед отправкой сообщения убедитесь, что ваш запрос оформлен в виде
+        вопроса, иначе диалог может показаться немного бессмысленным!
+      </p>
     </div>
   </div>
 </template>
@@ -78,6 +87,13 @@ watch(groupedMessages, scrollToBottom, { deep: true });
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
+
+  &__description {
+    font-size: 10px;
+    color: var(--light-gray);
+    margin-top: 5px;
+    text-align: center;
+  }
 
   &__process {
     display: flex;

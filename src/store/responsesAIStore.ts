@@ -1,6 +1,6 @@
 import { defineStore } from "pinia";
 import type { ChatMessage } from "./messageStore";
-import { phrasesAi, personalizedRedirectPhrases } from "../phrasesAi";
+import { phrasesAi, personalizedRedirectPhrases, aiStickers } from "../phrasesAi";
 import { useUserInfoStore } from "./userInfoStore";
 
 interface ResponseMessage {
@@ -12,10 +12,19 @@ export const useResponsesAIStore = defineStore('ai-store', {
     state: () => ({
         responsesAI: [] as ResponseMessage[],
         isProcess: false,
+        messageCounter: 0,
     }),
     actions: {
         getRandomResponse(): string {
             const userStore = useUserInfoStore();
+                        
+            this.messageCounter++;
+                        
+            if (this.messageCounter >= 3 && Math.random() < 0.3) {
+                this.messageCounter = 0; 
+                const randomSticker = aiStickers[Math.floor(Math.random() * aiStickers.length)];
+                return randomSticker; 
+            }
                         
             if (userStore.isUser && Math.random() > 0.7) {
                 const randomPersonalized = personalizedRedirectPhrases[Math.floor(Math.random() * personalizedRedirectPhrases.length)];

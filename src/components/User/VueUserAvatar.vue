@@ -33,6 +33,7 @@ const getUserInitials = computed(() => {
     height: 100%;
     background-color: var(--dark-violet);
     color: var(--violet);
+    border: 1px solid;
   }
 }
 </style>
