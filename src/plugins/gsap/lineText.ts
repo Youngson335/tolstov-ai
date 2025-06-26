@@ -7,7 +7,7 @@ const lineText = ((elClass: string) => {
     document.fonts.ready.then(() => {
         gsap.set(elClass, { opacity: 1 });
 
-        let split;
+        let split: gsap.core.Tween | undefined; 
         SplitText.create(elClass, {
             type: "words,lines",
             linesClass: "line",

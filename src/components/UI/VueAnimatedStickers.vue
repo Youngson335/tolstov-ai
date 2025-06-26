@@ -154,7 +154,7 @@ const stopAnimation = () => {
 // Реакция на изменение входного массива стикеров
 watch(
   () => props.stickers,
-  (newStickers) => {
+  () => {
     imagesLoaded.value = false;
     preloadImages();
   },
