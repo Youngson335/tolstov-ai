@@ -45,6 +45,7 @@ export const useResponsesAIStore = defineStore('ai-store', {
         },
         toggleProcess() {
             this.isProcess = !this.isProcess;
-        }        
+        },
+           
     }
 })
