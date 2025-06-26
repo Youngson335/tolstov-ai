@@ -24,5 +24,7 @@ onMounted(() => {
     border-radius: 18px;
     font-weight: 600;
   }
+  @media (max-width: 820px) {
+  }
 }
 </style>

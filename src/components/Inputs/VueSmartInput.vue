@@ -174,6 +174,7 @@ if (chatStore.chatHistory.length <= 0) {
     resize: none;
     &::placeholder {
       font-size: 15px;
+      color: var(--light-gray);
     }
   }
   &__disabled {

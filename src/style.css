@@ -31,3 +31,7 @@ body {
     max-width: 600px;
   }
 }
+
+button, a, input, textarea, [role="button"] {
+  -webkit-tap-highlight-color: transparent;
+}

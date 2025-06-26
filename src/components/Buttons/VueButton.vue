@@ -26,9 +26,14 @@ const props = withDefaults(
   cursor: pointer;
   transition: all 0.4s ease;
   font-size: 16px;
-  &:hover {
-    opacity: 0.7;
-    transition: all 0.4s ease;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  @media (hover: hover) and (pointer: fine) {
+    &:hover {
+      opacity: 0.7;
+      transition: all 0.4s ease;
+    }
   }
   &:active {
     scale: 1.03;

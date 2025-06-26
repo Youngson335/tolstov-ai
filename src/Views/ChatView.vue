@@ -1,11 +1,21 @@
 <template>
   <div class="chat-view">
-    <div class="chat-view__logo">
-      <vue-logo />
+    <div class="chat-view__header container">
+      <div class="chat-view__button">
+        <vue-button @click="onStartNewChat">
+          Новый чат
+          <img class="chat-view-image" :src="new_chat_icon" alt="" />
+        </vue-button>
+      </div>
     </div>
     <div class="chat-view__process">
       <vue-chat-process ref="chatProcess">
-        <template v-for="group of groupedMessages" :key="group.question.id">
+        <vue-start-chat-message v-if="chatStore.chatHistory.length === 0" />
+        <template
+          v-for="group of groupedMessages"
+          :key="group.question.id"
+          v-else
+        >
           <div class="message-container">
             <vue-message
               :message="group.question.messages"
@@ -52,12 +62,15 @@ import type { ChatMessage } from "../store/messageStore";
 import VueChatProcess from "../components/Chat/VueChatProcess.vue";
 import { useResponsesAIStore } from "../store/responsesAIStore";
 import VueResponse from "../components/Chat/VueResponse.vue";
-import VueLogo from "../components/Logo/VueLogo.vue";
+import VueButton from "../components/Buttons/VueButton.vue";
+import { new_chat_icon } from "../assets/icons";
+import VueStartChatMessage from "../components/Welcome/VueStartChatMessage.vue";
 
 const chatProcess = ref<HTMLElement>();
+const chatStore = useChatStore();
 
 const internalHistoryMessages = computed((): ChatMessage[] => {
-  return useChatStore().chatHistory;
+  return chatStore.chatHistory;
 });
 
 const internalResponses = computed(() => {
@@ -78,6 +91,10 @@ const scrollToBottom = async () => {
   }
 };
 
+const onStartNewChat = () => {
+  chatStore.clearAllHistoryMessages();
+};
+
 watch(groupedMessages, scrollToBottom, { deep: true });
 </script>
 
@@ -87,6 +104,13 @@ watch(groupedMessages, scrollToBottom, { deep: true });
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
+
+  &-image {
+    margin-left: 5px;
+  }
+  &__button {
+    max-width: 200px;
+  }
 
   &__description {
     font-size: 10px;
@@ -104,7 +128,7 @@ watch(groupedMessages, scrollToBottom, { deep: true });
     height: 100%;
     padding-bottom: 20px;
   }
-  &__logo {
+  &__header {
     display: flex;
     justify-content: center;
     align-items: center;
