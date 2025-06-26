@@ -20,11 +20,7 @@
 
 <script lang="ts" setup>
 import { ref, computed, onMounted, onUnmounted, watch } from "vue";
-
-interface Sticker {
-  id: number | string;
-  src: string;
-}
+import type Sticker from "./Sticker";
 
 const props = defineProps<{
   stickers: Sticker[];

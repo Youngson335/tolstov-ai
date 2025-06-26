@@ -40,6 +40,10 @@ export const useChatStore = defineStore('chat', {
     clearCurrentMessages() {
       this.currentMessages = [];
     },    
+
+    clearAllHistoryMessages() {
+      this.chatHistory = [];
+    }
   },
 
   getters: {    
