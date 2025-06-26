@@ -25,6 +25,7 @@ const props = withDefaults(
   width: 100%;
   cursor: pointer;
   transition: all 0.4s ease;
+  font-size: 16px;
   &:hover {
     opacity: 0.7;
     transition: all 0.4s ease;
