@@ -4,6 +4,7 @@
       v-for="(message, index) of internalMessages"
       :key="index"
       class="message-text"
+      :class="{ 'animate-text': props.isAnimate }"
     >
       {{ message }}
     </div>
@@ -11,15 +12,32 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, defineProps } from "vue";
+import { computed, defineProps, onMounted, watch } from "vue";
+import lineText from "../../plugins/gsap/lineText";
 
 const props = defineProps<{
   message: string[];
+  isAnimate: boolean;
 }>();
 
 const internalMessages = computed(() => {
   return props.message;
 });
+
+onMounted(() => {
+  if (props.isAnimate) {
+    lineText(".animate-text");
+  }
+});
+
+watch(
+  () => props.isAnimate,
+  (newVal) => {
+    if (newVal) {
+      lineText(".animate-text");
+    }
+  }
+);
 </script>
 
 <style lang="scss" scoped>

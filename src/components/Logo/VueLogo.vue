@@ -1,9 +1,16 @@
 <template>
   <div class="vue-logo">
-    <p class="logo"><span>#tolstov</span>GPT</p>
+    <p class="logo"><span>#tolstov</span>Ai</p>
   </div>
 </template>
-<script lang="ts" setup></script>
+<script lang="ts" setup>
+import splitText from "../../plugins/gsap/randomText";
+import { onMounted } from "vue";
+
+onMounted(() => {
+  splitText(".logo");
+});
+</script>
 <style lang="scss">
 .vue-logo {
   color: var(--violet);
