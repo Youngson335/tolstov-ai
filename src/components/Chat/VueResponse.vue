@@ -36,7 +36,10 @@ let currentIndex = 0;
 const aiStore = useResponsesAIStore();
 
 const isImage = computed(() => {
-  return props.response.startsWith("/src/assets");
+  return (
+    props.response.startsWith("/src/assets") ||
+    props.response.startsWith("/assets")
+  );
 });
 
 const startTyping = () => {
