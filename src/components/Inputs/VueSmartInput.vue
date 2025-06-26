@@ -14,6 +14,7 @@
       @keydown.delete="handleDelete"
       @blur="isFocused = false"
       :placeholder="placeholderText"
+      :disabled="isProcessResponse"
     ></textarea>
 
     <div class="vue-smart-input__value">
@@ -84,26 +85,87 @@ const isProcessResponse = computed(() => {
 
 const focusTextarea = () => textarea.value?.focus();
 
+const keyboardHeight = ref(0);
+const isKeyboardVisible = ref(false);
+
+const handleKeyboardOpen = () => {
+  if (!props.isChatPage) return;
+
+  isKeyboardVisible.value = true;
+
+  // Для iOS
+  const visualViewport = window.visualViewport;
+  if (visualViewport) {
+    keyboardHeight.value = window.innerHeight - visualViewport.height;
+    adjustInputPosition();
+    return;
+  }
+
+  // Для Android
+  setTimeout(() => {
+    const newKeyboardHeight =
+      window.innerHeight - document.documentElement.clientHeight;
+    if (newKeyboardHeight > 100) {
+      keyboardHeight.value = newKeyboardHeight;
+      adjustInputPosition();
+    }
+  }, 300);
+};
+
+const handleKeyboardClose = () => {
+  isKeyboardVisible.value = false;
+  keyboardHeight.value = 0;
+  adjustInputPosition();
+};
+
+const adjustInputPosition = () => {
+  if (!textarea.value) return;
+
+  if (keyboardHeight.value > 0) {
+    const inputRect = textarea.value.getBoundingClientRect();
+    const inputBottom = inputRect.bottom;
+    const viewportHeight = window.innerHeight;
+
+    if (inputBottom > viewportHeight - keyboardHeight.value) {
+      const offset = inputBottom - (viewportHeight - keyboardHeight.value) + 20;
+      window.scrollBy({
+        top: offset,
+        behavior: "smooth",
+      });
+    }
+  }
+};
+
+onMounted(() => {
+  textarea.value?.addEventListener("focus", () => {
+    isFocused.value = true;
+    setTimeout(handleKeyboardOpen, 100);
+  });
+
+  textarea.value?.addEventListener("blur", () => {
+    setTimeout(handleKeyboardClose, 100);
+  });
+
+  // Обработчики для виртуальной клавиатуры
+  if (window.visualViewport) {
+    window.visualViewport.addEventListener("resize", handleKeyboardOpen);
+  }
+
+  window.addEventListener("resize", handleKeyboardOpen);
+});
+
+onBeforeUnmount(() => {
+  if (window.visualViewport) {
+    window.visualViewport.removeEventListener("resize", handleKeyboardOpen);
+  }
+  window.removeEventListener("resize", handleKeyboardOpen);
+});
+
 const handleEnter = (e: KeyboardEvent) => {
   if (!e.shiftKey) {
     e.preventDefault();
     sendMessages();
   }
-};
-
-const handleKeyboardOpen = () => {
-  if (!props.isChatPage) return;
-
-  // Прокручиваем страницу к полю ввода
-  setTimeout(() => {
-    const inputElement = textarea.value;
-    if (inputElement) {
-      inputElement.scrollIntoView({
-        behavior: "smooth",
-        block: "center",
-      });
-    }
-  }, 300);
 };
 
 const handleDelete = (e: KeyboardEvent) => {
@@ -130,19 +192,6 @@ const sendMessages = async () => {
   await nextTick();
 };
 
-onMounted(() => {
-  textarea.value?.addEventListener("focus", () => {
-    isFocused.value = true;
-    handleKeyboardOpen();
-  });
-
-  window.addEventListener("resize", handleKeyboardOpen);
-});
-
-onBeforeUnmount(() => {
-  window.removeEventListener("resize", handleKeyboardOpen);
-});
-
 //по хорошему этот блок кода нужно вынести в другое место
 if (chatStore.chatHistory.length <= 0) {
   router.push("/");
@@ -162,6 +211,11 @@ if (chatStore.chatHistory.length <= 0) {
     max-width: 700px;
     margin: 0 auto;
     z-index: 100;
+    &.keyboard-open {
+      transform: translateY(
+        calc(-1 * (var(--keyboard-height, 250px) + env(safe-area-inset-bottom)))
+      );
+    }
   }
 
   textarea {
@@ -245,5 +299,22 @@ if (chatStore.chatHistory.length <= 0) {
 }
 .placeholder {
   opacity: 0.4;
+}
+
+@media (max-height: 700px) {
+  .vue-smart-input__chat.keyboard-open {
+    transform: translateY(
+      calc(-1 * (var(--keyboard-height, 200px) + env(safe-area-inset-bottom)))
+    );
+  }
+}
+
+// Для iOS
+@supports (-webkit-touch-callout: none) {
+  .vue-smart-input__chat {
+    bottom: calc(
+      20px + env(safe-area-inset-bottom) + constant(safe-area-inset-bottom)
+    );
+  }
 }
 </style>
