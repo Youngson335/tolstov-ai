@@ -7,33 +7,16 @@
       'vue-smart-input__chat': props.isChatPage,
     }"
   >
-    <textarea
-      ref="textarea"
-      v-model="currentMessage"
-      @keydown.enter="handleEnter"
-      @keydown.delete="handleDelete"
-      @blur="isFocused = false"
-      :placeholder="placeholderText"
-      :disabled="isProcessResponse"
-    ></textarea>
-
     <div class="vue-smart-input__value">
-      <div
-        v-if="internalMessage.length === 0 && !currentMessage && !isFocused"
-        class="placeholder"
-      >
-        {{ placeholderText }}
-      </div>
-
-      <div v-for="(msg, index) in internalMessage" :key="index" class="message">
-        {{ msg }}
-      </div>
-
-      <span v-if="isFocused">
-        {{ currentMessage }}
-        <span class="cursor"></span>
-      </span>
-      <span v-else>{{ currentMessage }}</span>
+      <textarea
+        ref="textarea"
+        v-model="currentMessage"
+        @keydown.enter="handleEnter"
+        @keydown.delete="handleDelete"
+        @blur="isFocused = false"
+        :placeholder="placeholderText"
+        :disabled="isProcessResponse"
+      ></textarea>
 
       <div
         class="vue-smart-input__button"
@@ -86,37 +69,30 @@ const isProcessResponse = computed(() => {
 const focusTextarea = () => textarea.value?.focus();
 
 const keyboardHeight = ref(0);
-const isKeyboardVisible = ref(false);
 
-const handleKeyboardOpen = () => {
-  if (!props.isChatPage) return;
+const adjustTextareaHeight = () => {
+  nextTick(() => {
+    if (!textarea.value) return;
 
-  isKeyboardVisible.value = true;
+    textarea.value.style.height = "auto";
+    const newHeight = Math.min(textarea.value.scrollHeight, 200);
+    textarea.value.style.height = `${newHeight}px`;
 
-  // Для iOS
-  const visualViewport = window.visualViewport;
-  if (visualViewport) {
-    keyboardHeight.value = window.innerHeight - visualViewport.height;
     adjustInputPosition();
-    return;
-  }
-
-  // Для Android
-  setTimeout(() => {
-    const newKeyboardHeight =
-      window.innerHeight - document.documentElement.clientHeight;
-    if (newKeyboardHeight > 100) {
-      keyboardHeight.value = newKeyboardHeight;
-      adjustInputPosition();
-    }
-  }, 300);
+  });
 };
 
-const handleKeyboardClose = () => {
-  isKeyboardVisible.value = false;
-  keyboardHeight.value = 0;
-  adjustInputPosition();
-};
+onMounted(() => {
+  textarea.value?.addEventListener("focus", () => {
+    isFocused.value = true;
+  });
+
+  textarea.value?.addEventListener("input", adjustTextareaHeight);
+});
+
+onBeforeUnmount(() => {
+  textarea.value?.removeEventListener("input", adjustTextareaHeight);
+});
 
 const adjustInputPosition = () => {
   if (!textarea.value) return;
@@ -135,31 +111,6 @@ const adjustInputPosition = () => {
     }
   }
 };
-
-onMounted(() => {
-  textarea.value?.addEventListener("focus", () => {
-    isFocused.value = true;
-    setTimeout(handleKeyboardOpen, 100);
-  });
-
-  textarea.value?.addEventListener("blur", () => {
-    setTimeout(handleKeyboardClose, 100);
-  });
-
-  // Обработчики для виртуальной клавиатуры
-  if (window.visualViewport) {
-    window.visualViewport.addEventListener("resize", handleKeyboardOpen);
-  }
-
-  window.addEventListener("resize", handleKeyboardOpen);
-});
-
-onBeforeUnmount(() => {
-  if (window.visualViewport) {
-    window.visualViewport.removeEventListener("resize", handleKeyboardOpen);
-  }
-  window.removeEventListener("resize", handleKeyboardOpen);
-});
 
 const handleEnter = (e: KeyboardEvent) => {
   if (!e.shiftKey) {
@@ -211,22 +162,19 @@ if (chatStore.chatHistory.length <= 0) {
     max-width: 700px;
     margin: 0 auto;
     z-index: 100;
-    &.keyboard-open {
-      transform: translateY(
-        calc(-1 * (var(--keyboard-height, 250px) + env(safe-area-inset-bottom)))
-      );
-    }
   }
 
   textarea {
-    opacity: 0;
-    position: absolute;
     width: 100%;
-    height: 100%;
-    top: 0;
-    left: 0;
+    background-color: var(--gray);
+    border: none;
+    outline: none;
+    font-size: 15px;
+    color: var(--white);
     resize: none;
-    cursor: text;
+    &::placeholder {
+      font-size: 15px;
+    }
   }
   &__disabled {
     opacity: 0.5;
@@ -299,22 +247,5 @@ if (chatStore.chatHistory.length <= 0) {
 }
 .placeholder {
   opacity: 0.4;
-}
-
-@media (max-height: 700px) {
-  .vue-smart-input__chat.keyboard-open {
-    transform: translateY(
-      calc(-1 * (var(--keyboard-height, 200px) + env(safe-area-inset-bottom)))
-    );
-  }
-}
-
-// Для iOS
-@supports (-webkit-touch-callout: none) {
-  .vue-smart-input__chat {
-    bottom: calc(
-      20px + env(safe-area-inset-bottom) + constant(safe-area-inset-bottom)
-    );
-  }
 }
 </style>
