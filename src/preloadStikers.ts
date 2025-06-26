@@ -8,7 +8,7 @@ const stickerCache: StickerCache = new Map();
 async function preloadStickers(): Promise<void> {
   try {
     await Promise.all(aiStickers.map((sticker) => {
-      return new Promise<void>((resolve, reject) => {
+      return new Promise<void>((resolve) => {
         const img = new Image();
         img.src = sticker;
         img.onload = () => {
