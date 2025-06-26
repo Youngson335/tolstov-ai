@@ -37,8 +37,8 @@ const aiStore = useResponsesAIStore();
 
 const isImage = computed(() => {
   return (
-    props.response.startsWith("/src/assets") ||
-    props.response.startsWith("/assets")
+    props.response.startsWith("/assets") ||
+    props.response.startsWith("/src/assets")
   );
 });
 
