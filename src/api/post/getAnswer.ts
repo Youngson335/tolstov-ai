@@ -9,7 +9,7 @@ const getAnswer = async (question: string) => {
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ message: question }),
+      body: JSON.stringify({ question: question }),
     }
   )
     .then((response) => {
