@@ -21,7 +21,8 @@ export const useChatStore = defineStore('chat', {
       this.currentMessages = [...this.currentMessages, text];
     },
     
-    saveCurrentMessages() {
+    saveCurrentMessages(question: string) {
+      console.log('question', question)
       if (this.currentMessages.length === 0) return;      
       
       this.chatHistory.push({
@@ -29,10 +30,14 @@ export const useChatStore = defineStore('chat', {
         messages: [...this.currentMessages],
       });
 
-      aiStore.createResponseById({
-        id: this.nextId - 1,
-        messages: [...this.currentMessages],
-      })      
+      // aiStore.createResponseById({
+      //   id: this.nextId - 1,
+      //   messages: [...this.currentMessages],
+      // })    
+        aiStore.setNewAnswer({
+          id: this.nextId - 1,
+          messages: [...this.currentMessages],
+        }, question)
       
       this.currentMessages = [];
     },

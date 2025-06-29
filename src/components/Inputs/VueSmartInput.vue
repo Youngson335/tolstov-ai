@@ -134,11 +134,12 @@ const sendMessages = async () => {
   }
   if (currentMessage.value.trim()) {
     chatStore.addMessageToCurrent(currentMessage.value);
-    currentMessage.value = "";
   }
 
-  chatStore.saveCurrentMessages();
+  chatStore.saveCurrentMessages(currentMessage.value);
   chatStore.clearCurrentMessages();
+
+  currentMessage.value = "";
 
   await nextTick();
 };

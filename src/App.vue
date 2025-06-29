@@ -6,7 +6,7 @@
 import { onMounted } from "vue";
 import preloadStickers from "./preloadStikers";
 
-onMounted(() => {
+onMounted(async () => {
   preloadStickers();
 });
 </script>

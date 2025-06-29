@@ -2,6 +2,7 @@ import { defineStore } from "pinia";
 import type { ChatMessage } from "./messageStore";
 import { phrasesAi, personalizedRedirectPhrases, aiStickers } from "../phrasesAi";
 import { useUserInfoStore } from "./userInfoStore";
+import getAnswer from "../api/post/getAnswer";
 
 interface ResponseMessage {
     id: number,
@@ -36,12 +37,24 @@ export const useResponsesAIStore = defineStore('ai-store', {
         createResponseById(message: ChatMessage) {
             this.isProcess = true;
             
-            const responseId = message.id;
+            const responseId = message.id;            
             
             this.responsesAI.push({
                 id: responseId,
                 response: this.getRandomResponse(),
             });            
+        },
+        async setNewAnswer(message: ChatMessage, question: string) {
+            this.isProcess = true;
+            const responseId = message.id; 
+            const answer = await getAnswer(question);
+
+            if(answer) {
+                this.responsesAI.push({
+                    id: responseId,
+                    response: answer,
+                }); 
+            }                
         },
         toggleProcess() {
             this.isProcess = !this.isProcess;
