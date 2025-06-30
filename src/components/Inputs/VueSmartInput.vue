@@ -46,12 +46,19 @@ import { arrow_icon } from "../../assets/icons";
 import { useRoute } from "vue-router";
 import router from "../..";
 import { useResponsesAIStore } from "../../store/responsesAIStore";
+import { useAiModelConfigStore } from "../../store/aiModelConfigStore";
+import AiModelMode from "../../enums/AiModelMode";
 
 const props = defineProps<{
   isChatPage?: boolean;
 }>();
 
+const route = useRoute();
+
 const chatStore = useChatStore();
+const aiStore = useResponsesAIStore();
+const aiConfigStore = useAiModelConfigStore();
+
 const currentMessage = ref("");
 const textarea = ref<HTMLTextAreaElement>();
 const isFocused = ref(false);
@@ -59,8 +66,9 @@ const internalMessage = computed(() => {
   return chatStore.currentMessages;
 });
 const placeholderText = "Введите сообщение...";
-const route = useRoute();
-const aiStore = useResponsesAIStore();
+const aiMode = computed((): AiModelMode => {
+  return aiConfigStore.getAiMode;
+});
 
 const isProcessResponse = computed(() => {
   return aiStore.isProcess;
