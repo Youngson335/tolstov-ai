@@ -8,6 +8,7 @@
   --gray:#5d5d5d;
   --light-gray: #797777;
   --dark-violet: #36164f;
+  --radius: 18px;
 }
 * {
   padding: 0;

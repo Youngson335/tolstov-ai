@@ -77,7 +77,7 @@ watch(
   z-index: 2;
 
   &:first-child {
-    margin-top: 0;
+    margin-top: 0px;
   }
 
   &:last-child {

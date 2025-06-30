@@ -1,11 +1,31 @@
 <template>
   <div class="chat-view">
     <div class="chat-view__header container">
-      <div class="chat-view__button">
+      <div class="chat-view__buttons">
         <vue-button @click="onStartNewChat">
           Новый чат
           <img class="chat-view-image" :src="new_chat_icon" alt="" />
         </vue-button>
+        <vue-toggle-content
+          :options="toggleModelOptions.find((item) => item.id === aiModeId)!"
+          @change="aiModelConfigStore.toggleAiConfig($event)"
+        />
+      </div>
+      <div>
+        <vue-notification
+          :type="notification.status!"
+          :is-action-button="
+            notification.status !== NotificationStatus.SUCCESS ? true : false
+          "
+          @action="reloadPage"
+          v-if="notification.status"
+        >
+          <template #title> Ошибка </template>
+          <template #description>
+            <p>{{ notification.text }}</p>
+          </template>
+          <template #actions> Обновить чат </template>
+        </vue-notification>
       </div>
     </div>
     <div class="chat-view__process">
@@ -32,8 +52,9 @@
               :key="group.question.id"
             />
             <vue-response
-              v-if="group.response"
+              v-if="notification.status !== NotificationStatus.ERROR"
               :response="group.response.response"
+              :ai-mode="aiMode"
               class="response-message"
               :class="{
                 'response-message__disabled':
@@ -65,24 +86,63 @@ import VueResponse from "../components/Chat/VueResponse.vue";
 import VueButton from "../components/Buttons/VueButton.vue";
 import { new_chat_icon } from "../assets/icons";
 import VueStartChatMessage from "../components/Welcome/VueStartChatMessage.vue";
+import { useAiModelConfigStore } from "../store/aiModelConfigStore";
+import AiModelMode from "../enums/AiModelMode";
+import AiModelModeId from "../enums/AiModelModeId";
+import VueNotification from "../components/Notification/VueNotification.vue";
+import { useNotificationStore } from "../notification/notification";
+import type { Notification } from "../notification/notification";
+import NotificationStatus from "../notification/NotificationStatus";
+import VueToggleContent from "../components/Switch/VueToggleContent.vue";
+import type ToggleSwitchOption from "../components/Switch/ToggleSwitchOption";
+
+const toggleModelOptions: ToggleSwitchOption[] = [
+  {
+    id: AiModelModeId.BASE,
+    name: "tolstov-ai",
+    span: AiModelMode.BASE,
+  },
+  {
+    id: AiModelModeId.PRO,
+    name: "tolstov-ai",
+    span: AiModelMode.PRO,
+  },
+];
 
 const chatProcess = ref<HTMLElement>();
-const chatStore = useChatStore();
 
+const chatStore = useChatStore();
+const aiModelConfigStore = useAiModelConfigStore();
+const notificationStore = useNotificationStore();
+
+const aiMode = computed((): AiModelMode => {
+  return aiModelConfigStore.aiModeValue.aiMode;
+});
+const aiModeId = computed((): AiModelModeId => {
+  return aiModelConfigStore.aiModeValue.aiModeId;
+});
+const notification = computed((): Notification => {
+  return notificationStore.notification;
+});
 const internalHistoryMessages = computed((): ChatMessage[] => {
   return chatStore.chatHistory;
 });
-
 const internalResponses = computed(() => {
   return useResponsesAIStore().responsesAI;
 });
-
 const groupedMessages = computed(() => {
   return [...internalHistoryMessages.value].reverse().map((question) => {
-    const response = internalResponses.value.find((r) => r.id === question.id);
+    const response = internalResponses.value.find(
+      (r) => r.id === question.id
+    ) ?? { id: question.id, response: null };
+
     return { question, response };
   });
 });
+
+const reloadPage = () => {
+  window.location.reload();
+};
 
 const scrollToBottom = async () => {
   await nextTick();
@@ -108,8 +168,9 @@ watch(groupedMessages, scrollToBottom, { deep: true });
   &-image {
     margin-left: 5px;
   }
-  &__button {
+  &__buttons {
     max-width: 200px;
+    margin-bottom: 10px;
   }
 
   &__description {
@@ -132,6 +193,7 @@ watch(groupedMessages, scrollToBottom, { deep: true });
     display: flex;
     justify-content: center;
     align-items: center;
+    flex-direction: column;
     font-size: 30px;
     position: absolute;
     top: 0px;

@@ -1,12 +1,21 @@
 import { defineStore } from 'pinia';
 import { useResponsesAIStore } from './responsesAIStore';
+import { useAiModelConfigStore } from './aiModelConfigStore';
+import AiModelMode from '../enums/AiModelMode';
+import { computed } from 'vue';
+
+
+const aiStore = useResponsesAIStore();
+const aiModelConfigStore = useAiModelConfigStore();
+
+const aiMode = computed((): AiModelMode => {
+  return aiModelConfigStore.getAiMode;
+});
 
 export interface ChatMessage {
   id: number;
   messages: string[];
 }
-
-const aiStore = useResponsesAIStore();
 
 export const useChatStore = defineStore('chat', {
   state: () => ({
@@ -21,23 +30,25 @@ export const useChatStore = defineStore('chat', {
       this.currentMessages = [...this.currentMessages, text];
     },
     
-    saveCurrentMessages(question: string) {
-      console.log('question', question)
+    saveCurrentMessages(question: string) {      
       if (this.currentMessages.length === 0) return;      
       
       this.chatHistory.push({
         id: this.nextId++,
         messages: [...this.currentMessages],
       });
-
-      // aiStore.createResponseById({
-      //   id: this.nextId - 1,
-      //   messages: [...this.currentMessages],
-      // })    
-        aiStore.setNewAnswer({
+            
+      if(aiMode.value === AiModelMode.BASE) {        
+        aiStore.createResponseById({
           id: this.nextId - 1,
           messages: [...this.currentMessages],
-        }, question)
+        });
+      } else if(aiMode.value === AiModelMode.PRO) {
+          aiStore.setNewAnswer({
+            id: this.nextId - 1,
+            messages: [...this.currentMessages],
+          }, question)
+      }
       
       this.currentMessages = [];
     },

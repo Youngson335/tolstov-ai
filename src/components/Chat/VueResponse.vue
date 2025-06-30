@@ -8,9 +8,9 @@
     </div>
 
     <!-- Контент -->
-    <div v-show="!isLoading">
+    <div v-if="!isLoading">
       <div v-if="isImage && showImage" class="vue-response__image">
-        <img :src="props.response" alt="" />
+        <img :src="props.response!" alt="" />
       </div>
       <div v-else class="text-content">
         {{ displayedText }}
@@ -22,10 +22,14 @@
 <script lang="ts" setup>
 import { ref, onMounted, onUnmounted, watch, computed } from "vue";
 import { useResponsesAIStore } from "../../store/responsesAIStore";
+import AiModelMode from "../../enums/AiModelMode";
 
 const props = defineProps<{
-  response: string;
+  response: string | null;
+  aiMode: AiModelMode;
 }>();
+
+const aiStore = useResponsesAIStore();
 
 const displayedText = ref("");
 const showImage = ref(false);
@@ -33,45 +37,60 @@ const isLoading = ref(true);
 let typingInterval: number;
 let currentIndex = 0;
 
-const aiStore = useResponsesAIStore();
-
 const isImage = computed(() => {
-  return (
-    props.response.startsWith("/assets") ||
-    props.response.startsWith("/src/assets")
-  );
+  return props.response
+    ? props.response.startsWith("/assets") ||
+        props.response.startsWith("/src/assets")
+    : false;
 });
 
 const startTyping = () => {
   isLoading.value = true;
-  displayedText.value = "";
-  currentIndex = 0;
-  clearInterval(typingInterval);
+  if (props.aiMode === AiModelMode.BASE) {
+    displayedText.value = "";
+    currentIndex = 0;
+    clearInterval(typingInterval);
 
-  if (isImage.value) {
-    setTimeout(() => {
-      showImage.value = true;
-      isLoading.value = false;
-      aiStore.toggleProcess();
-    }, 1000);
-  } else {
-    // Задержка перед началом печати текста (как у картинки)
-    setTimeout(() => {
-      isLoading.value = false;
-      typingInterval = setInterval(() => {
-        if (currentIndex < props.response.length) {
-          displayedText.value += props.response[currentIndex];
-          currentIndex++;
-        } else {
-          clearInterval(typingInterval);
-          aiStore.isProcess = false;
-        }
-      }, 50);
-    }, 1000);
+    if (isImage.value) {
+      setTimeout(() => {
+        showImage.value = true;
+        isLoading.value = false;
+        aiStore.toggleProcess();
+      }, 1000);
+    } else {
+      // Задержка перед началом печати текста (как у картинки)
+      setTimeout(() => {
+        isLoading.value = false;
+        typingInterval = setInterval(() => {
+          if (currentIndex < props.response!.length) {
+            displayedText.value += props.response![currentIndex];
+            currentIndex++;
+          } else {
+            clearInterval(typingInterval);
+            aiStore.isProcess = false;
+          }
+        }, 50);
+      }, 1000);
+    }
+  } else if (props.aiMode === AiModelMode.PRO) {
+    if (props.response) {
+      setTimeout(() => {
+        isLoading.value = false;
+        typingInterval = setInterval(() => {
+          if (currentIndex < props.response!.length) {
+            displayedText.value += props.response![currentIndex];
+            currentIndex++;
+          }
+        }, 15);
+      }, 0);
+      return props.response;
+    }
   }
 };
 
-onMounted(startTyping);
+onMounted(() => {
+  startTyping();
+});
 
 watch(
   () => props.response,

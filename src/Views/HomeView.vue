@@ -2,6 +2,16 @@
   <div class="home-view container">
     <div class="home-view__start">
       <vue-welcome class="home-view__start-welcome" />
+      <div class="home-view__toggle-model">
+        <p>Выбрать модель</p>
+        <div class="home-view__toggle-model--toggler">
+          <vue-toggle-switch
+            :options="toggleModelOptions"
+            v-model="selectedIdModel"
+            @input="setNewAiMode($event)"
+          />
+        </div>
+      </div>
       <vue-smart-input :is-chat-page="false" />
       <p>Слишком "умная" нейросеть</p>
       <div class="home-view__start-stickers">
@@ -28,10 +38,11 @@
         <div style="display: flex; justify-content: start; width: 100%">
           <vue-response
             :response="'Для лучшего качества ответа советую пройти регистрацию!)'"
+            :ai-mode="aiMode"
           />
         </div>
       </div>
-      <div>
+      <div class="home-view__auth-info">
         <div v-if="isUserRegister" class="home-view__avatar">
           <vue-user-avatar />
         </div>
@@ -73,14 +84,22 @@ import {
   sticker_21,
   sticker_22,
 } from "../assets/stickers";
-
 import VueAnimatedStickers from "../components/UI/VueAnimatedStickers.vue";
-import { computed } from "vue";
+import VueToggleSwitch from "../components/Switch/VueToggleSwitch.vue";
+import { computed, ref } from "vue";
+import type ToggleSwitchOption from "../components/Switch/ToggleSwitchOption";
+import AiModelMode from "../enums/AiModelMode";
+import AiModelModeId from "../enums/AiModelModeId";
+import { useAiModelConfigStore } from "../store/aiModelConfigStore";
 
 const userInfoStore = useUserInfoStore();
+const aiModelConfigStore = useAiModelConfigStore();
 
 const isUserRegister = computed(() => {
   return userInfoStore.isUser;
+});
+const aiMode = computed((): AiModelMode => {
+  return AiModelMode.BASE;
 });
 
 const stickers = [
@@ -114,6 +133,27 @@ const duckStickers = [
   { id: 12, src: sticker_21 },
   { id: 13, src: sticker_22 },
 ];
+
+const selectedIdModel = ref<AiModelModeId.PRO | AiModelModeId.BASE>(
+  aiModelConfigStore.aiModeValue.aiModeId
+);
+
+const toggleModelOptions: ToggleSwitchOption[] = [
+  {
+    id: AiModelModeId.BASE,
+    name: "tolstov-ai",
+    span: AiModelMode.BASE,
+  },
+  {
+    id: AiModelModeId.PRO,
+    name: "tolstov-ai",
+    span: AiModelMode.PRO,
+  },
+];
+
+const setNewAiMode = (aiId: AiModelModeId) => {
+  aiModelConfigStore.setNewAiConfig(aiId);
+};
 </script>
 
 <style lang="scss" scoped>
@@ -148,6 +188,25 @@ const duckStickers = [
     @media (max-width: 820px) {
       height: 100%;
       width: 100%;
+    }
+  }
+
+  &__toggle-model {
+    & p {
+      color: var(--white) !important;
+      font-size: 15px !important;
+      margin-bottom: 5px;
+    }
+    &--toggler {
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      margin-bottom: 20px;
+    }
+  }
+  &__auth-info {
+    @media (max-height: 715px) {
+      margin-bottom: 20px;
     }
   }
 
