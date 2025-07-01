@@ -17,6 +17,7 @@ const props = withDefaults(
 </script>
 <style lang="scss">
 .vue-button {
+  height: 100%;
   border: none;
   background-color: var(--violet);
   color: var(--white);

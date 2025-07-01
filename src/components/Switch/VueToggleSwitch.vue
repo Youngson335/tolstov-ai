@@ -48,7 +48,7 @@ const sliderStyle = computed(() => {
 <style lang="scss" scoped>
 .toggle-switch {
   --toggle-height: 40px;
-  --toggle-border-radius: 8px;
+  --toggle-border-radius: 18px;
   --toggle-bg: #f5f5f5;
   --toggle-active-bg: #ffffff;
   --toggle-text-color: #333333;
