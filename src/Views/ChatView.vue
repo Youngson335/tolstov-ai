@@ -20,7 +20,13 @@
           @action="reloadPage"
           v-if="notification.status"
         >
-          <template #title> Ошибка </template>
+          <template #title>
+            {{
+              notification.status !== NotificationStatus.SUCCESS
+                ? "Ошибка"
+                : "Починилось"
+            }}
+          </template>
           <template #description>
             <p>{{ notification.text }}</p>
           </template>

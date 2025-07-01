@@ -145,11 +145,6 @@ const sendMessages = async () => {
 
   await nextTick();
 };
-
-//по хорошему этот блок кода нужно вынести в другое место
-if (chatStore.chatHistory.length <= 0) {
-  router.push("/");
-}
 </script>
 
 <style lang="scss">
