@@ -1,5 +1,7 @@
-const routes = {
-    chat: '/chat'
+const apiRoutes = {
+    chat: '/chat',
+    user: '/user',
+       
 }
 
-export default routes;
+export default apiRoutes;

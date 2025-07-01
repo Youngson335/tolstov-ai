@@ -10,6 +10,9 @@
           :options="toggleModelOptions.find((item) => item.id === aiModeId)!"
           @change="aiModelConfigStore.toggleAiConfig($event)"
         />
+        <vue-button @click="onGoToHome">
+          <img :src="home_icon" alt="" />
+        </vue-button>
       </div>
       <div>
         <vue-notification
@@ -20,7 +23,9 @@
           @action="reloadPage"
           v-if="notification.status"
         >
-          <template #title> Ошибка </template>
+          <template #title>
+            {{ notification.title }}
+          </template>
           <template #description>
             <p>{{ notification.text }}</p>
           </template>
@@ -84,17 +89,19 @@ import VueChatProcess from "../components/Chat/VueChatProcess.vue";
 import { useResponsesAIStore } from "../store/responsesAIStore";
 import VueResponse from "../components/Chat/VueResponse.vue";
 import VueButton from "../components/Buttons/VueButton.vue";
-import { new_chat_icon } from "../assets/icons";
+import { home_icon, new_chat_icon } from "../assets/icons";
 import VueStartChatMessage from "../components/Welcome/VueStartChatMessage.vue";
 import { useAiModelConfigStore } from "../store/aiModelConfigStore";
 import AiModelMode from "../enums/AiModelMode";
 import AiModelModeId from "../enums/AiModelModeId";
 import VueNotification from "../components/Notification/VueNotification.vue";
-import { useNotificationStore } from "../notification/notification";
-import type { Notification } from "../notification/notification";
+import { useNotificationStore } from "../notification/notificationStore";
+import type { Notification } from "../notification/notificationStore";
 import NotificationStatus from "../notification/NotificationStatus";
 import VueToggleContent from "../components/Switch/VueToggleContent.vue";
 import type ToggleSwitchOption from "../components/Switch/ToggleSwitchOption";
+import { startNetWorkMonitoring } from "../api/networkMonitor";
+import router from "..";
 
 const toggleModelOptions: ToggleSwitchOption[] = [
   {
@@ -114,6 +121,7 @@ const chatProcess = ref<HTMLElement>();
 const chatStore = useChatStore();
 const aiModelConfigStore = useAiModelConfigStore();
 const notificationStore = useNotificationStore();
+const responsesAiStore = useResponsesAIStore();
 
 const aiMode = computed((): AiModelMode => {
   return aiModelConfigStore.aiModeValue.aiMode;
@@ -128,7 +136,7 @@ const internalHistoryMessages = computed((): ChatMessage[] => {
   return chatStore.chatHistory;
 });
 const internalResponses = computed(() => {
-  return useResponsesAIStore().responsesAI;
+  return responsesAiStore.responsesAI;
 });
 const groupedMessages = computed(() => {
   return [...internalHistoryMessages.value].reverse().map((question) => {
@@ -143,6 +151,9 @@ const groupedMessages = computed(() => {
 const reloadPage = () => {
   window.location.reload();
 };
+const onGoToHome = () => {
+  router.push("/");
+};
 
 const scrollToBottom = async () => {
   await nextTick();
@@ -153,7 +164,10 @@ const scrollToBottom = async () => {
 
 const onStartNewChat = () => {
   chatStore.clearAllHistoryMessages();
+  responsesAiStore.toggleProcess();
 };
+
+startNetWorkMonitoring();
 
 watch(groupedMessages, scrollToBottom, { deep: true });
 </script>
@@ -164,13 +178,25 @@ watch(groupedMessages, scrollToBottom, { deep: true });
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
+  max-width: 600px;
+  margin: 0 auto;
 
   &-image {
     margin-left: 5px;
   }
   &__buttons {
-    max-width: 200px;
+    max-width: 600px;
+    height: 50px;
+    margin: 0 auto;
+    width: 100%;
     margin-bottom: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 5%;
+    & .vue-button {
+      max-width: 150px;
+    }
   }
 
   &__description {

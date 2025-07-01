@@ -1,43 +1,90 @@
 import { defineStore } from "pinia";
-import type UserInfo from "../components/User/UserInfo";
+import type { UserInfoModel } from "../components/User/UserInfoModel";
+import setNewUser from "../api/post/setNewUser";
+import getUserInfoByUniqueName from "../api/get/getUserInfoByUniqueName";
 
-interface StateUserInfo extends UserInfo {
-    isUser: boolean
+interface StateUserInfo extends UserInfoModel {
+    hasUserAuth: boolean,    
+
 }
 
 export const useUserInfoStore = defineStore('user-info', {
     state: (): StateUserInfo => ({
+        id: null,
         userName: '',
         userSurName: '',
         userFamilyName: '',
-        isUser: false
+        uniqueName: '',
+        hasUserAuth: false,        
+        createdAt: null,
+        updatedAt: null,
+        countVisits: null,
+        countSentMessages: null
     }),
     actions: {
-        setUserInfo(surName: string, name: string, familyName: string) {
-            this.userName = name;
-            this.userSurName = surName;
-            this.userFamilyName = familyName;
+        async setUserInfo(surName: string, name: string, familyName: string, uniqueName: string) {            
+            const userInfoValue = {
+                userName: name, 
+                userSurName: surName, 
+                userFamilyName: familyName,
+                uniqueName: uniqueName
+            }
 
-            localStorage.setItem('user-info', JSON.stringify({
-                userName: this.userName, 
-                userSurName: this.userSurName, 
-                userFamilyName: this.userFamilyName
-            }))
+            const responseUserModel = await setNewUser(userInfoValue);     
+            this.initUserInfo(responseUserModel);
 
-            this.isUser = true;
+            this.hasUserAuth = true;
+        }, 
+
+        async getUserInfo(uniqueName: string) {
+            const responseUserModel = await getUserInfoByUniqueName(uniqueName);
+            this.initUserInfo(responseUserModel);
         },
-        initUserInfo() {
-            const hasUserInfo = localStorage.getItem('user-info');
-            if(hasUserInfo) {
-                const userInfoParse = JSON.parse(hasUserInfo) as UserInfo;
-                
-                this.userName = userInfoParse.userName;
-                this.userSurName = userInfoParse.userSurName;
-                this.userFamilyName = userInfoParse.userFamilyName;
 
-                this.isUser = true;
+        setUniqueNameToLocalStorage(uniqueName: string) {
+            localStorage.setItem('uniqueName', uniqueName);
+        },
+
+        removeUniqueNameFromLocalStorage() {
+            localStorage.removeItem('uniqueName')
+        },
+
+        initUserInfo(userModel: UserInfoModel) {            
+            if(userModel) {
+                this.hasUserAuth = true;
+
+                this.id = userModel.id;
+                this.uniqueName = userModel.uniqueName
+                this.userFamilyName = userModel.userFamilyName;
+                this.userName = userModel.userName;
+                this.userSurName = userModel.userSurName;
+                this.createdAt = userModel.createdAt;
+                this.countSentMessages = userModel.countSentMessages;
+                this.countVisits = userModel.countVisits;
+                this.updatedAt = userModel.updatedAt;                
+
+                this.setUniqueNameToLocalStorage(userModel.uniqueName);
             } else {
-                this.isUser = false;
+                this.hasUserAuth = false;
+
+                this.id = null;
+                this.uniqueName = '';
+                this.userFamilyName = '';
+                this.userName = '';
+                this.userSurName = '';
+                this.createdAt = null;
+                this.countSentMessages = null;
+                this.countVisits = null;
+                this.updatedAt = null; 
+
+                this.removeUniqueNameFromLocalStorage();
+            }            
+        },
+
+        initUserAuth() {
+            const uniqueName = localStorage.getItem('uniqueName');
+            if(uniqueName) {
+                this.getUserInfo(uniqueName);
             }
         }
     }

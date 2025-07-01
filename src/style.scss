@@ -14,7 +14,11 @@
   padding: 0;
   margin: 0;
   box-sizing: border-box;
-  font-family: "Montserrat", sans-serif;
+  font-family: "Montserrat", sans-serif;  
+  -webkit-tap-highlight-color: transparent;
+}
+*:focus:not(:focus-visible) {
+  outline: none;  
 }
 
 body {
@@ -25,10 +29,7 @@ body {
   width: calc(100% - 50px);
   margin: 0 auto;
   max-width: 1200px;
-}
-
-@media (max-width: 820px) {
-  .container {
+  @media (max-width: 820px) {
     max-width: 600px;
   }
 }
