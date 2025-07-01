@@ -2,35 +2,13 @@ import api from "../api";
 import routes from "../routes";
 import { useNotificationStore } from "../../notification/notification";
 import NotificationStatus from "../../notification/NotificationStatus";
-import { NetworkMonitor } from "../networkMonitor";
+import { isOnline } from "../networkMonitor";
 
 const notificationStore = useNotificationStore();
-const networkMonitor = NetworkMonitor.getInstance();
-let _count_error: number = 0;
 
-networkMonitor.startMonitoring();
 
-networkMonitor.onWeakConnection((event) => {
-  notificationStore.setNotification(event.detail.message, NotificationStatus.WARNING)
-  _count_error++;  
-});
-
-networkMonitor.onConnectionRestored((event) => {
-  if(_count_error > 0) {    
-    _count_error = 0;
-    notificationStore.setNotification(event.detail.message, NotificationStatus.SUCCESS)
-    setTimeout(() => {
-      notificationStore.clearNotification();
-    }, 2000);
-  }
-});
-
-const getAnswer = async (question: string) => {    
-  if (!navigator.onLine) {
-    console.warn('Отсутствует интернет-соединение');
-    throw new Error('Отсутствует интернет-соединение');
-  }
-
+const getAnswer = async (question: string) => {      
+  isOnline();
   const response = await fetch(
     `${api}${routes.chat}`,
     {
@@ -47,8 +25,7 @@ const getAnswer = async (question: string) => {
       }
       return response.json();
     })
-    .then((data) => {
-      console.log("Успешный ответ:", data);
+    .then((data) => {      
       return data;
     })
     .catch((err) => {

@@ -95,6 +95,7 @@ import type { Notification } from "../notification/notification";
 import NotificationStatus from "../notification/NotificationStatus";
 import VueToggleContent from "../components/Switch/VueToggleContent.vue";
 import type ToggleSwitchOption from "../components/Switch/ToggleSwitchOption";
+import { startNetWorkMonitoring } from "../api/networkMonitor";
 
 const toggleModelOptions: ToggleSwitchOption[] = [
   {
@@ -155,6 +156,8 @@ const onStartNewChat = () => {
   chatStore.clearAllHistoryMessages();
 };
 
+startNetWorkMonitoring();
+
 watch(groupedMessages, scrollToBottom, { deep: true });
 </script>
 
@@ -164,13 +167,25 @@ watch(groupedMessages, scrollToBottom, { deep: true });
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
+  max-width: 600px;
+  margin: 0 auto;
 
   &-image {
     margin-left: 5px;
   }
   &__buttons {
-    max-width: 200px;
+    max-width: 600px;
+    height: 50px;
+    margin: 0 auto;
+    width: 100%;
     margin-bottom: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    & .vue-button {
+      max-width: 200px;
+      margin-right: 10px;
+    }
   }
 
   &__description {

@@ -1,4 +1,7 @@
-// networkMonitor.ts
+import { useNotificationStore } from "../notification/notification";
+import NotificationStatus from "../notification/NotificationStatus";
+
+const notificationStore = useNotificationStore();
 export class NetworkMonitor {
   private static instance: NetworkMonitor;
   private offlineEventName = 'weak-connection';
@@ -105,5 +108,34 @@ export class NetworkMonitor {
   public removeListeners() {
     window.removeEventListener(this.offlineEventName, () => {});
     window.removeEventListener(this.onlineEventName, () => {});
+  }
+}
+
+export const startNetWorkMonitoring = () => {
+  const networkMonitor = NetworkMonitor.getInstance();
+  let _count_error: number = 0;
+
+  networkMonitor.startMonitoring();
+
+  networkMonitor.onWeakConnection((event) => {
+    notificationStore.setNotification(event.detail.message, NotificationStatus.WARNING)
+    _count_error++;  
+  });
+
+  networkMonitor.onConnectionRestored((event) => {
+    if(_count_error > 0) {    
+      _count_error = 0;
+      notificationStore.setNotification(event.detail.message, NotificationStatus.SUCCESS)
+      setTimeout(() => {
+        notificationStore.clearNotification();
+      }, 2000);
+    }
+  });
+}
+
+export const isOnline = () => {
+  if (!navigator.onLine) {
+    console.warn('Отсутствует интернет-соединение');    
+    throw new Error('Отсутствует интернет-соединение');
   }
 }
