@@ -7,7 +7,8 @@ interface NotificationState {
 
 interface Notification {
     text: string | null;
-    status: NotificationStatus | null
+    status: NotificationStatus | null,
+    title: string | null
 }
 
 const useNotificationStore = defineStore('notification', {
@@ -15,17 +16,25 @@ const useNotificationStore = defineStore('notification', {
         notification: {
             text: null,
             status: null,
+            title: null,
         },
     }),
     actions: {
-        setNotification(response: string, status: NotificationStatus) {
+        setNotification(response: string, title: string = 'Уведомление', status: NotificationStatus) {
             this.notification!.status = status;
             this.notification!.text = response;
+            this.notification.title = title;
         },
         clearNotification() {
             this.notification.status = null;
             this.notification.text = null;
-        }
+            this.notification.title = null;
+        },
+        startTimeoutNotification(ms: number) {
+            setTimeout(() => {
+                this.clearNotification();
+            }, ms ?? 2000)
+        }        
     },
     getters: {
         getNotification(state) {

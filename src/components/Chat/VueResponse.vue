@@ -1,5 +1,5 @@
 <template>
-  <div class="vue-response">
+  <div class="vue-response" @click="onCopyResponse(props.response)">
     <!-- Лоадер "думания" -->
     <div v-if="isLoading" class="thinking-loader">
       <div class="dot"></div>
@@ -23,6 +23,8 @@
 import { ref, onMounted, onUnmounted, watch, computed } from "vue";
 import { useResponsesAIStore } from "../../store/responsesAIStore";
 import AiModelMode from "../../enums/AiModelMode";
+import { useNotificationStore } from "../../notification/notificationStore";
+import NotificationStatus from "../../notification/NotificationStatus";
 
 const props = defineProps<{
   response: string | null;
@@ -30,6 +32,7 @@ const props = defineProps<{
 }>();
 
 const aiStore = useResponsesAIStore();
+const notificationStore = useNotificationStore();
 
 const displayedText = ref("");
 const showImage = ref(false);
@@ -88,6 +91,29 @@ const startTyping = () => {
   }
 };
 
+const onCopyResponse = async (answer: string | null) => {
+  try {
+    if (answer) {
+      await navigator.clipboard.writeText(answer);
+    }
+    notificationStore.setNotification(
+      "Ответ удачно скопирован",
+      "Уведомление",
+      NotificationStatus.SUCCESS
+    );
+    notificationStore.startTimeoutNotification(3000);
+    return true;
+  } catch (err) {
+    notificationStore.setNotification(
+      "Не удалось скопировать!",
+      "Ошибка",
+      NotificationStatus.ERROR
+    );
+    notificationStore.startTimeoutNotification(3000);
+    return false;
+  }
+};
+
 onMounted(() => {
   startTyping();
 });
@@ -112,6 +138,28 @@ onUnmounted(() => {
   border-radius: 18px;
   position: relative;
   min-height: 40px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  &:active {
+    scale: 1.05;
+    color: var(--violet);
+  }
+
+  &::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: -28px;
+    width: 20px;
+    height: 25px;
+    border: 0 solid transparent;
+    border-top-width: 18px;
+    border-top-color: #201f1f;
+    border-radius: 0 0 20px 0;
+    transform: rotate(-13deg);
+    transform-origin: 0 0;
+    z-index: -1;
+  }
 
   .text-content {
     white-space: pre-wrap; // Сохраняем переносы строк
@@ -136,22 +184,6 @@ onUnmounted(() => {
         filter: blur(0px);
       }
     }
-  }
-
-  &::after {
-    content: "";
-    position: absolute;
-    left: 0;
-    bottom: -28px;
-    width: 20px;
-    height: 25px;
-    border: 0 solid transparent;
-    border-top-width: 18px;
-    border-top-color: #201f1f;
-    border-radius: 0 0 20px 0;
-    transform: rotate(-13deg);
-    transform-origin: 0 0;
-    z-index: -1;
   }
 }
 

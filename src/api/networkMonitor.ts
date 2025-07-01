@@ -1,4 +1,4 @@
-import { useNotificationStore } from "../notification/notification";
+import { useNotificationStore } from "../notification/notificationStore";
 import NotificationStatus from "../notification/NotificationStatus";
 
 const notificationStore = useNotificationStore();
