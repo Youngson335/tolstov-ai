@@ -17,15 +17,23 @@ export interface ChatMessage {
   messages: string[];
 }
 
+interface ChatStoreState {
+  chatHistory: ChatMessage[],
+  currentMessages: string[],
+  nextId: number,
+  countMessages: number
+}
+
 export const useChatStore = defineStore('chat', {
-  state: () => ({
+  state: (): ChatStoreState => ({
     chatHistory: [] as ChatMessage[],
     currentMessages: [] as string[],
     nextId: 1,
+    countMessages: Number(localStorage.getItem('count-sent-messages')) ?? 0 
   }),
 
   actions: {    
-    addMessageToCurrent(text: string) {
+    addMessageToCurrent(text: string) {      
       if (!text.trim()) return;
       this.currentMessages = [...this.currentMessages, text];
     },
@@ -49,6 +57,8 @@ export const useChatStore = defineStore('chat', {
             messages: [...this.currentMessages],
           }, question)
       }
+
+      this.saveCountMessageToLocalStorage(this.countMessages + 1);
       
       this.currentMessages = [];
     },
@@ -59,6 +69,11 @@ export const useChatStore = defineStore('chat', {
 
     clearAllHistoryMessages() {
       this.chatHistory = [];
+    },
+
+    saveCountMessageToLocalStorage(countMessages: number) {
+      localStorage.setItem('count-sent-messages', JSON.stringify(countMessages));
+      this.countMessages++;
     }
   },
 

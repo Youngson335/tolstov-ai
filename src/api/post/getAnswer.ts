@@ -1,6 +1,6 @@
 import api from "../api";
-import routes from "../routes";
-import { useNotificationStore } from "../../notification/notification";
+import apiRoutes from "../routes";
+import { useNotificationStore } from "../../notification/notificationStore";
 import NotificationStatus from "../../notification/NotificationStatus";
 import { isOnline } from "../networkMonitor";
 
@@ -10,7 +10,7 @@ const notificationStore = useNotificationStore();
 const getAnswer = async (question: string) => {      
   isOnline();
   const response = await fetch(
-    `${api}${routes.chat}`,
+    `${api}${apiRoutes.chat}`,
     {
       method: "POST",
       headers: {
@@ -30,7 +30,7 @@ const getAnswer = async (question: string) => {
     })
     .catch((err) => {
       console.error("Ошибка запроса:", err);
-      notificationStore.setNotification(`${err}`, NotificationStatus.ERROR);
+      notificationStore.setNotification(`${err}`, 'Ошибка', NotificationStatus.ERROR);
       throw err;
     });
 
