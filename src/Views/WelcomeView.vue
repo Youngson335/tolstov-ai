@@ -44,8 +44,8 @@
         </div>
       </div>
       <div class="welcome-view__auth-info">
-        <div v-if="isUserRegister" class="welcome-view__avatar">
-          <vue-user-avatar @click="onGoToHome" />
+        <div class="welcome-view__avatar" v-if="isUserRegister">
+          <vue-user-avatar @click="onGoToHome" :user-info="userInfoStore" />
         </div>
         <vue-auth-form v-else />
       </div>
@@ -157,10 +157,6 @@ const toggleModelOptions = computed((): ToggleSwitchOption[] => {
       name: "tolstov-ai",
       span: AiModelMode.PRO,
       disabled: isModelProDisabled.value,
-      tooltipValue: [
-        "Чтобы использовать эту версию",
-        "необходимо пройти регистрацию!",
-      ],
     },
   ];
 });
@@ -229,14 +225,28 @@ initStore();
     }
   }
   &__auth-info {
+    display: flex;
+    justify-content: end;
     @media (max-height: 715px) {
       margin-bottom: 20px;
+      width: 100%;
     }
   }
 
   &__avatar {
-    display: flex;
-    justify-content: end;
+    position: relative;
+    width: 50px;
+    &-loading {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      display: flex;
+      justify-self: center;
+      align-items: center;
+      width: 50px;
+    }
   }
 
   &__start {

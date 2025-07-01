@@ -3,6 +3,5 @@ export default interface ToggleSwitchOption {
     name: string,
     span?: string,
     route?: string,
-    disabled?: boolean,
-    tooltipValue?: string[] | string,
+    disabled?: boolean,    
 }

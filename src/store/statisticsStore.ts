@@ -5,8 +5,20 @@ import type { UserStatisticsResponse } from "../api/get/getUsersStatistics";
 
 const userInfoStore = useUserInfoStore();
 
+export interface StatisticsItem {
+    title: string;
+    value: number;
+}
+interface StatisticsState {
+    userVisits: StatisticsItem,
+    userCountSentMessages: StatisticsItem,
+    allVisits: StatisticsItem,
+    allCountSentMessages: StatisticsItem,    
+    uploadFlag: null | 1,
+}
+
 export const useStatisticsStore = defineStore('statistics', {
-    state: () => ({
+    state: (): StatisticsState => ({
         userVisits: {
             title: 'Кол-во посещений приложения',
             value: 0,
@@ -22,7 +34,8 @@ export const useStatisticsStore = defineStore('statistics', {
         allCountSentMessages: {
             title: "Всего отправлленных сообщений",
             value: 0
-        },
+        },        
+        uploadFlag: null,
     }),
     actions: {
         async initStatistics() {            
@@ -33,6 +46,7 @@ export const useStatisticsStore = defineStore('statistics', {
             this.allVisits.value = all_users;
             this.allCountSentMessages.value = all_sent_messages;
             
+            this.uploadFlag = 1;
         }
     }
 })
