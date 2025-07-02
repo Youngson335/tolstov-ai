@@ -165,7 +165,7 @@ const scrollToBottom = async () => {
 
 const onStartNewChat = () => {
   chatStore.clearAllHistoryMessages();
-  responsesAiStore.toggleProcess();
+  responsesAiStore.isProcess = false;
 };
 
 startNetWorkMonitoring();

@@ -142,6 +142,7 @@ const sendMessages = async () => {
   chatStore.clearCurrentMessages();
 
   currentMessage.value = "";
+  textarea.value!.style.height = "auto";
 
   await nextTick();
 };
