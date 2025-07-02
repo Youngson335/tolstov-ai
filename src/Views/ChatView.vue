@@ -101,7 +101,8 @@ import NotificationStatus from "../notification/NotificationStatus";
 import VueToggleContent from "../components/Switch/VueToggleContent.vue";
 import type ToggleSwitchOption from "../components/Switch/ToggleSwitchOption";
 import { startNetWorkMonitoring } from "../api/networkMonitor";
-import router from "..";
+import router from "../index";
+import initStore from "../store/initStore";
 
 const toggleModelOptions: ToggleSwitchOption[] = [
   {
@@ -170,6 +171,8 @@ const onStartNewChat = () => {
 startNetWorkMonitoring();
 
 watch(groupedMessages, scrollToBottom, { deep: true });
+
+initStore();
 </script>
 
 <style lang="scss">

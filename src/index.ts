@@ -30,7 +30,7 @@ const router = createRouter({
   routes,
 });
 
-router.beforeEach((to, from, next) => {
+router.beforeEach((to, from, next) => {  
   
   const storedCount = localStorage.getItem('count-visits');
   let countVisits = storedCount ? JSON.parse(storedCount) : 0;
@@ -41,7 +41,7 @@ router.beforeEach((to, from, next) => {
   if (countVisits === 1 && to.path !== '/welcome') {
     next('/welcome');
     return;
-  }
+  }  
 
   next();
 });

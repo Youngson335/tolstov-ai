@@ -4,7 +4,7 @@ import setNewUser from "../api/post/setNewUser";
 import getUserInfoByUniqueName from "../api/get/getUserInfoByUniqueName";
 
 interface StateUserInfo extends UserInfoModel {
-    hasUserAuth: boolean,    
+    hasUserAuth: boolean | null,    
 
 }
 
@@ -15,7 +15,7 @@ export const useUserInfoStore = defineStore('user-info', {
         userSurName: '',
         userFamilyName: '',
         uniqueName: '',
-        hasUserAuth: false,        
+        hasUserAuth: null,        
         createdAt: null,
         updatedAt: null,
         countVisits: null,
@@ -81,10 +81,13 @@ export const useUserInfoStore = defineStore('user-info', {
             }            
         },
 
-        initUserAuth() {
+        async initUserAuth() {            
             const uniqueName = localStorage.getItem('uniqueName');
             if(uniqueName) {
-                this.getUserInfo(uniqueName);
+                await this.getUserInfo(uniqueName);
+                this.hasUserAuth = true;
+            } else {
+                this.hasUserAuth = false;
             }
         }
     }

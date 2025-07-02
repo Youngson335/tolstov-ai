@@ -2,11 +2,14 @@ import api from "../api"
 import apiRoutes from "../routes"
 import { useNotificationStore } from "../../notification/notificationStore";
 import NotificationStatus from "../../notification/NotificationStatus";
+import { NotificationScoped } from "../../notification/notificationStore";
 import type { UserInfoModel } from "../../components/User/UserInfoModel";
+import type { ResponseError } from "../ResponseError";
 
 const notificationStore = useNotificationStore();
 
 const getUserInfoByUniqueName = async (uniqueName: string) => {
+    let response_err: null | ResponseError = null;
     const response = await fetch(`${api}${apiRoutes.user}/${uniqueName}`)
     .then((response) => {
         if (!response.ok) {
@@ -19,7 +22,7 @@ const getUserInfoByUniqueName = async (uniqueName: string) => {
       })
     .catch((err) => {
         console.error("Ошибка запроса:", err);
-        notificationStore.setNotification(`${err}`, 'Ошибка', NotificationStatus.ERROR);
+        notificationStore.setNotification(response_err!.error, '', NotificationStatus.ERROR, NotificationScoped.AUTH)
         throw err;
     });
 
