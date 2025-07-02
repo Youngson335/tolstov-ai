@@ -7,22 +7,34 @@ const routes: Array<RouteRecordRaw> = [
     path: '/',
     name: 'home',
     component: () => import('./Views/HomeView.vue'),
+    children: [
+      {
+        path: '/info',
+        name: 'info',
+        component: () => import('./Views/home_children/InfoView.vue')        
+      },
+      {
+        path: '/settings',
+        name: 'settings',
+        component: () => import('./Views/home_children/SettingsView.vue')        
+      },
+      {
+        path: '/statistics',
+        name: 'statistics',
+        component: () => import('./Views/home_children/StatisticsView.vue')        
+      },
+    ]
   },
   {
     path: '/welcome',
     name: 'welcome',
-    component: () => import('./Views/WelcomeView.vue'),
+    component: () => import('./Views/WelcomeView.vue'),    
   },  
   {
     path: '/chat',
     name: 'chat',
     component: () => import('./Views/ChatView.vue'),
-  },  
-  {
-    path: '/settings',
-    name: 'settings',
-    component: () => import('./Views/SettingsView.vue'),
-  },    
+  }  
 ]
 
 const router = createRouter({

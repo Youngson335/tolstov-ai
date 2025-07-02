@@ -60,7 +60,6 @@ const sliderStyle = computed(() => {
   position: relative;
   display: inline-block;
   width: 100%;
-  max-width: 300px;
   border-radius: var(--toggle-border-radius);
   background-color: var(--dark-violet);
   box-shadow: var(--toggle-box-shadow);
@@ -86,7 +85,7 @@ const sliderStyle = computed(() => {
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 0 12px;
+    padding: 0 5px;
     border: none;
     background: transparent;
     color: var(--white);

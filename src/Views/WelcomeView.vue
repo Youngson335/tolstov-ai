@@ -204,6 +204,9 @@ initStore();
   }
 
   &__toggle-model {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
     & p {
       color: var(--white) !important;
       font-size: 15px !important;
@@ -211,6 +214,7 @@ initStore();
     }
     &--toggler {
       width: 100%;
+      max-width: 300px;
       display: flex;
       justify-content: center;
       margin-bottom: 20px;
