@@ -1,7 +1,11 @@
 <template>
   <form class="vue-auth-form">
     <div v-if="!isEditForm">
-      <div class="vue-auth-form__item" @click="onStartEditForm">
+      <div
+        class="vue-auth-form__item"
+        @click="onStartEditForm"
+        v-if="userInfoStore.hasUserAuth !== null"
+      >
         <vue-button>{{ authTitle }}</vue-button>
       </div>
     </div>
@@ -24,8 +28,14 @@
       <div class="vue-auth-form__item" v-if="authNameBtn === AuthNameBtn.AUTH">
         <vue-button @click="onEditStateAuthForm"> Нет user-name? </vue-button>
       </div>
+      <div class="vue-auth-form__item" v-if="hasAuthError">
+        <vue-error :error="hasAuthError" />
+      </div>
       <div class="vue-auth-form__item">
-        <vue-button @click="onSaveUserInfo" :enabled="isValidForm">
+        <vue-button
+          @click="onSaveUserInfo"
+          :enabled="isValidForm && !hasAuthError"
+        >
           Сохранить
         </vue-button>
       </div>
@@ -33,10 +43,13 @@
   </form>
 </template>
 <script lang="ts" setup>
-import { computed, ref } from "vue";
+import { computed, ref, watch } from "vue";
 import VueTextInput from "../Inputs/VueTextInput.vue";
 import VueButton from "../Buttons/VueButton.vue";
+import VueError from "../Error/VueError.vue";
 import { useUserInfoStore } from "../../store/userInfoStore";
+import { useNotificationStore } from "../../notification/notificationStore";
+import { NotificationScoped } from "../../notification/notificationStore";
 
 enum AuthNameBtn {
   AUTH = "Авторизоваться",
@@ -48,6 +61,11 @@ enum AuthTitle {
   REG = "Регистрация",
 }
 
+enum AuthState {
+  AUTH = "auth",
+  REG = "reg",
+}
+
 const nameValue = ref("");
 const familyName = ref("");
 const surNameValue = ref("");
@@ -55,10 +73,16 @@ const uniqueNameValue = ref("");
 const isEditForm = ref(false);
 const authNameBtn = ref<AuthNameBtn>(AuthNameBtn.AUTH);
 const authTitle = ref<AuthTitle>(AuthTitle.AUTH);
+const authState = ref<AuthState>(AuthState.AUTH);
 
 const userInfoStore = useUserInfoStore();
+const notificationStore = useNotificationStore();
 
-// userInfoStore.getUserInfo();
+const hasAuthError = computed(() => {
+  return notificationStore.notification.scope === NotificationScoped.AUTH
+    ? notificationStore.notification.text
+    : false;
+});
 
 const isValidForm = computed(() => {
   if (authNameBtn.value === AuthNameBtn.REG) {
@@ -78,18 +102,32 @@ const onStartEditForm = () => {
 };
 
 const onSaveUserInfo = () => {
-  userInfoStore.setUserInfo(
-    surNameValue.value,
-    nameValue.value,
-    familyName.value,
-    uniqueNameValue.value
-  );
+  if (authState.value === AuthState.REG) {
+    userInfoStore.setUserInfo(
+      surNameValue.value,
+      nameValue.value,
+      familyName.value,
+      uniqueNameValue.value
+    );
+  } else if (authState.value === AuthState.AUTH) {
+    userInfoStore.getUserInfo(uniqueNameValue.value);
+  }
 };
 
 const onEditStateAuthForm = () => {
   authNameBtn.value = AuthNameBtn.REG;
   authTitle.value = AuthTitle.REG;
+  authState.value = AuthState.REG;
 };
+
+watch(
+  () => uniqueNameValue.value,
+  (newVal: string) => {
+    if (notificationStore.notification.text) {
+      notificationStore.clearNotification();
+    }
+  }
+);
 </script>
 <style lang="scss">
 .vue-auth-form {

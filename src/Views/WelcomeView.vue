@@ -43,7 +43,11 @@
         </div>
       </div>
       <div class="welcome-view__auth-info">
-        <div v-if="isUserRegister" class="welcome-view__avatar">
+        <div
+          v-if="isUserRegister"
+          class="welcome-view__avatar"
+          @click="onGoToHome"
+        >
           <vue-user-avatar />
         </div>
         <vue-auth-form v-else />
@@ -91,6 +95,8 @@ import type ToggleSwitchOption from "../components/Switch/ToggleSwitchOption";
 import AiModelMode from "../enums/AiModelMode";
 import AiModelModeId from "../enums/AiModelModeId";
 import { useAiModelConfigStore } from "../store/aiModelConfigStore";
+import initStore from "../store/initStore";
+import router from "../index";
 
 const userInfoStore = useUserInfoStore();
 const aiModelConfigStore = useAiModelConfigStore();
@@ -154,6 +160,12 @@ const toggleModelOptions: ToggleSwitchOption[] = [
 const setNewAiMode = (aiId: AiModelModeId) => {
   aiModelConfigStore.setNewAiConfig(aiId);
 };
+
+const onGoToHome = () => {
+  router.push("/");
+};
+
+initStore();
 </script>
 
 <style lang="scss" scoped>

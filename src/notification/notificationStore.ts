@@ -8,7 +8,15 @@ interface NotificationState {
 interface Notification {
     text: string | null;
     status: NotificationStatus | null,
-    title: string | null
+    title: string | null,
+    scope: NotificationScoped | null
+}
+
+export enum NotificationScoped {
+    AUTH = 'auth',
+    CHAT = 'chat',
+    WELCOME = 'welcome',
+    HOME = 'home'
 }
 
 const useNotificationStore = defineStore('notification', {
@@ -17,13 +25,15 @@ const useNotificationStore = defineStore('notification', {
             text: null,
             status: null,
             title: null,
+            scope: null,
         },
     }),
     actions: {
-        setNotification(response: string, title: string = 'Уведомление', status: NotificationStatus) {
+        setNotification(response: string, title: string = 'Уведомление', status: NotificationStatus, scope?: NotificationScoped) {
             this.notification!.status = status;
             this.notification!.text = response;
             this.notification.title = title;
+            scope ? this.notification.scope = scope : this.notification.scope = null;
         },
         clearNotification() {
             this.notification.status = null;

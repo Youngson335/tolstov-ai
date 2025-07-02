@@ -17,8 +17,14 @@ const getUserInitials = computed(() => {
 </script>
 <style lang="scss">
 .vue-user-avatar {
+  cursor: pointer;
   width: 50px;
   height: 50px;
+  transition: all 0.3s ease;
+  &:active {
+    scale: 1.05;
+    transition: all 0.3s ease;
+  }
   & p {
     text-transform: uppercase;
     background-color: var(--violet);
