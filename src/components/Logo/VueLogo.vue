@@ -1,6 +1,6 @@
 <template>
   <div class="vue-logo">
-    <p class="logo"><span>#tolstov</span>Ai</p>
+    <p class="logo"><span>#tolstov-</span>ai</p>
   </div>
 </template>
 <script lang="ts" setup>

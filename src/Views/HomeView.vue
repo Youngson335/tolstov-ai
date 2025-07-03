@@ -15,8 +15,8 @@
         />
       </div>
       <div class="home-view__header-navigation">
-        <vue-button>приветствие</vue-button>
-        <vue-button>чат</vue-button>
+        <vue-button @click="goToPage('/welcome')">приветствие</vue-button>
+        <vue-button @click="goToPage('/chat')">чат</vue-button>
       </div>
     </header>
     <section class="home-view__main">
@@ -28,6 +28,9 @@
         </router-view>
       </vue-main>
     </section>
+    <div class="home-view__exit-profile" @click="onExitFromProfile">
+      <vue-button>Выйти из профиля</vue-button>
+    </div>
   </div>
 </template>
 <script lang="ts" setup>
@@ -39,6 +42,7 @@ import VueMain from "../components/Main/VueMain.vue";
 import VueButton from "../components/Buttons/VueButton.vue";
 import router from "../index";
 import { useRoute } from "vue-router";
+import { useUserInfoStore } from "../store/userInfoStore";
 
 enum MenuRoutes {
   INFO = "/info",
@@ -53,6 +57,7 @@ enum MenuId {
 }
 
 const route = useRoute();
+const userInfoStore = useUserInfoStore();
 
 const activeMenuItemId = ref(1);
 const menuItems: ToggleSwitchOption[] = [
@@ -124,6 +129,15 @@ const setActiveMenu = (path: string) => {
   activeMenuItemId.value = activeMenu!.id;
 };
 
+const goToPage = (path: string) => {
+  router.push(path);
+};
+
+const onExitFromProfile = () => {
+  userInfoStore.exitFromProfile();
+  router.push("/welcome");
+};
+
 parseQuery();
 initStore();
 </script>
@@ -141,7 +155,7 @@ initStore();
   flex-direction: column;
   &__header {
     width: calc(100% - 50px);
-    padding: 20px 0px;
+    padding: 15px 0px;
 
     &-profile {
       display: flex;
@@ -151,7 +165,7 @@ initStore();
       padding: 10px;
       border-radius: var(--radius);
       margin: 0 auto;
-      margin-bottom: 20px;
+      margin-bottom: 15px;
       & span {
         display: inline-block;
         background: var(--violet);
@@ -168,14 +182,17 @@ initStore();
     }
     &-navigation {
       display: flex;
-      gap: 20px;
-      margin-top: 20px;
+      gap: 15px;
+      margin-top: 15px;
     }
   }
   &__main {
     width: 100%;
     display: flex;
     justify-content: center;
+  }
+  &__exit-profile {
+    margin: 15px 0px;
   }
 }
 .slide-left-enter-active,

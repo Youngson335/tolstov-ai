@@ -103,19 +103,24 @@ import type ToggleSwitchOption from "../components/Switch/ToggleSwitchOption";
 import { startNetWorkMonitoring } from "../api/networkMonitor";
 import router from "../index";
 import initStore from "../store/initStore";
+import { useUserInfoStore } from "../store/userInfoStore";
 
-const toggleModelOptions: ToggleSwitchOption[] = [
-  {
-    id: AiModelModeId.BASE,
-    name: "tolstov-ai",
-    span: AiModelMode.BASE,
-  },
-  {
-    id: AiModelModeId.PRO,
-    name: "tolstov-ai",
-    span: AiModelMode.PRO,
-  },
-];
+const toggleModelOptions = computed((): ToggleSwitchOption[] => {
+  return [
+    {
+      id: AiModelModeId.BASE,
+      name: "tolstov-ai",
+      span: AiModelMode.BASE,
+      disabled: isModelProDisabled.value,
+    },
+    {
+      id: AiModelModeId.PRO,
+      name: "tolstov-ai",
+      span: AiModelMode.PRO,
+      disabled: isModelProDisabled.value,
+    },
+  ];
+});
 
 const chatProcess = ref<HTMLElement>();
 
@@ -123,6 +128,11 @@ const chatStore = useChatStore();
 const aiModelConfigStore = useAiModelConfigStore();
 const notificationStore = useNotificationStore();
 const responsesAiStore = useResponsesAIStore();
+const userInfoStore = useUserInfoStore();
+
+const isModelProDisabled = computed(() => {
+  return userInfoStore.hasUserAuth ? false : true;
+});
 
 const aiMode = computed((): AiModelMode => {
   return aiModelConfigStore.aiModeValue.aiMode;
@@ -153,7 +163,7 @@ const reloadPage = () => {
   window.location.reload();
 };
 const onGoToHome = () => {
-  router.push("/");
+  router.push("/info");
 };
 
 const scrollToBottom = async () => {
