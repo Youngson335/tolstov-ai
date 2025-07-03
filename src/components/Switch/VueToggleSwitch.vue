@@ -6,6 +6,7 @@
         :key="option.id"
         class="toggle-option"
         :class="{ active: props.modelValue === option.id }"
+        :disabled="option.disabled ? option.disabled : false"
         @click="selectOption(option.id)"
       >
         {{ option.name }}
@@ -46,6 +47,9 @@ const sliderStyle = computed(() => {
 </script>
 
 <style lang="scss" scoped>
+button:disabled {
+  opacity: 0.4;
+}
 .toggle-switch {
   --toggle-height: 40px;
   --toggle-border-radius: 18px;

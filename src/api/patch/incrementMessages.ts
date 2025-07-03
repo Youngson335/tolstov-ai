@@ -8,9 +8,14 @@ import type { ResponseError } from "../ResponseError";
 
 const notificationStore = useNotificationStore();
 
-const getUserInfoByUniqueName = async (uniqueName: string) => {
+const incrementMessages = async (uniqueName: string) => {
     let response_err: null | ResponseError = null;
-    const response = await fetch(`${api}${apiRoutes.user}/${uniqueName}`)
+    const response = await fetch(`${api}${apiRoutes.chat}/${uniqueName}${apiRoutes.incrementMessages}`, {
+        method: "PATCH",     
+         headers: {
+          "Content-Type": "application/json",          
+        },   
+    })
     .then(async (response) => {
         if (!response.ok) {
           response_err = await response.json();
@@ -23,11 +28,11 @@ const getUserInfoByUniqueName = async (uniqueName: string) => {
       })
     .catch((err) => {
         console.error("Ошибка запроса:", err);        
-        notificationStore.setNotification(response_err!.error, '', NotificationStatus.ERROR, NotificationScoped.AUTH)
+        notificationStore.setNotification(response_err!.error, '', NotificationStatus.ERROR, NotificationScoped.CHAT)
         throw err;
     });
 
     return response as UserInfoModel;
 }
 
-export default getUserInfoByUniqueName;
+export default incrementMessages;

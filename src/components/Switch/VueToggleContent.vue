@@ -1,25 +1,31 @@
 <template>
-  <div class="vue-toggle-content" @click="onChange">
+  <button
+    class="vue-toggle-content"
+    @click="onChange"
+    :disabled="props.options.disabled ? props.options.disabled : false"
+  >
     <p class="vue-toggle-content--p">{{ props.options.name }}</p>
     <span class="vue-toggle-content--span">{{ props.options.span }}</span>
-  </div>
+  </button>
 </template>
 <script lang="ts" setup>
 import { defineProps, defineEmits } from "vue";
 import type ToggleSwitchOption from "./ToggleSwitchOption";
 
 const props = defineProps<{
-  //   modelValue: number;
   options: ToggleSwitchOption;
 }>();
 
-const emits = defineEmits(["update:modelValue", "change"]);
+const emits = defineEmits(["change"]);
 
 const onChange = () => {
   emits("change", props.options.id);
 };
 </script>
-<style lang="scss">
+<style lang="scss" scoped>
+button:disabled {
+  opacity: 0.7;
+}
 .vue-toggle-content {
   cursor: pointer;
   height: 100%;
@@ -33,6 +39,7 @@ const onChange = () => {
   padding: 12px 16px;
   border-radius: var(--radius);
   transition: all 0.3s ease;
+  border: none;
   &--p {
     margin-right: 5px;
     @media (max-width: 820px) {

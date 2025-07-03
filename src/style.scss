@@ -38,3 +38,56 @@ body {
 button, a, input, textarea, [role="button"] {
   -webkit-tap-highlight-color: transparent;
 }
+
+.vue-tooltip {
+  opacity: 0;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+  pointer-events: none;
+  will-change: transform, opacity;  
+  text-wrap: wrap;
+}
+
+.vue-tooltip.show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0) !important;
+}
+
+.tooltip-arrow {
+  position: absolute;
+  width: 0;
+  height: 0;
+  border-style: solid;  
+}
+
+/* Анимации для разных направлений */
+.tooltip-top {
+  transform: translateX(-50%) translateY(10px);
+}
+
+.tooltip-bottom {
+  transform: translateX(-50%) translateY(-10px);
+}
+
+.tooltip-left {
+  transform: translateX(10px) translateY(-50%);
+}
+
+.tooltip-right {
+  transform: translateX(-10px) translateY(-50%);
+}
+
+.tooltip-top.show {
+  transform: translateX(-50%) translateY(0) !important;
+}
+
+.tooltip-bottom.show {
+  transform: translateX(-50%) translateY(0) !important;
+}
+
+.tooltip-left.show {
+  transform: translateX(0) translateY(-50%) !important;
+}
+
+.tooltip-right.show {
+  transform: translateX(0) translateY(-50%) !important;
+}

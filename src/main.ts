@@ -8,6 +8,9 @@ import { useAiModelConfigStore } from './store/aiModelConfigStore';
 const app = createApp(App);
 const pinia = createPinia();
 
-app.use(pinia).use(router).mount('#app').$nextTick(() => {
-    useAiModelConfigStore().initAiModelMode(); //инициализируем модель, работает, потому что микро таск!
-});
+app.use(pinia)
+   .use(router)   
+   .mount('#app')
+   .$nextTick(() => {
+     useAiModelConfigStore().initAiModelMode();
+   }); 

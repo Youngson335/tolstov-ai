@@ -37,18 +37,14 @@
         />
         <div style="display: flex; justify-content: start; width: 100%">
           <vue-response
-            :response="'Для лучшего качества ответа советую пройти регистрацию!)'"
+            :response="'Чтобы использовать PRO версию, необходимо пройти регистрацию!'"
             :ai-mode="aiMode"
           />
         </div>
       </div>
       <div class="welcome-view__auth-info">
-        <div
-          v-if="isUserRegister"
-          class="welcome-view__avatar"
-          @click="onGoToHome"
-        >
-          <vue-user-avatar />
+        <div v-if="isUserRegister" class="welcome-view__avatar">
+          <vue-user-avatar @click="onGoToHome" />
         </div>
         <vue-auth-form v-else />
       </div>
@@ -144,25 +140,36 @@ const selectedIdModel = ref<AiModelModeId.PRO | AiModelModeId.BASE>(
   aiModelConfigStore.aiModeValue.aiModeId
 );
 
-const toggleModelOptions: ToggleSwitchOption[] = [
-  {
-    id: AiModelModeId.BASE,
-    name: "tolstov-ai",
-    span: AiModelMode.BASE,
-  },
-  {
-    id: AiModelModeId.PRO,
-    name: "tolstov-ai",
-    span: AiModelMode.PRO,
-  },
-];
+const isModelProDisabled = computed(() => {
+  return userInfoStore.hasUserAuth ? false : true;
+});
+
+const toggleModelOptions = computed((): ToggleSwitchOption[] => {
+  return [
+    {
+      id: AiModelModeId.BASE,
+      name: "tolstov-ai",
+      span: AiModelMode.BASE,
+    },
+    {
+      id: AiModelModeId.PRO,
+      name: "tolstov-ai",
+      span: AiModelMode.PRO,
+      disabled: isModelProDisabled.value,
+      tooltipValue: [
+        "Чтобы использовать эту версию",
+        "необходимо пройти регистрацию!",
+      ],
+    },
+  ];
+});
 
 const setNewAiMode = (aiId: AiModelModeId) => {
   aiModelConfigStore.setNewAiConfig(aiId);
 };
 
 const onGoToHome = () => {
-  router.push("/");
+  router.push("/info");
 };
 
 initStore();

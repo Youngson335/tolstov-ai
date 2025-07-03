@@ -3,10 +3,13 @@ import { useResponsesAIStore } from './responsesAIStore';
 import { useAiModelConfigStore } from './aiModelConfigStore';
 import AiModelMode from '../enums/AiModelMode';
 import { computed } from 'vue';
+import { useUserInfoStore } from './userInfoStore';
+import incrementMessages from '../api/patch/incrementMessages';
 
 
 const aiStore = useResponsesAIStore();
 const aiModelConfigStore = useAiModelConfigStore();
+const userInfoStore = useUserInfoStore();
 
 const aiMode = computed((): AiModelMode => {
   return aiModelConfigStore.getAiMode;
@@ -20,16 +23,14 @@ export interface ChatMessage {
 interface ChatStoreState {
   chatHistory: ChatMessage[],
   currentMessages: string[],
-  nextId: number,
-  countMessages: number
+  nextId: number  
 }
 
 export const useChatStore = defineStore('chat', {
   state: (): ChatStoreState => ({
     chatHistory: [] as ChatMessage[],
     currentMessages: [] as string[],
-    nextId: 1,
-    countMessages: Number(localStorage.getItem('count-sent-messages')) ?? 0 
+    nextId: 1,    
   }),
 
   actions: {    
@@ -38,7 +39,7 @@ export const useChatStore = defineStore('chat', {
       this.currentMessages = [...this.currentMessages, text];
     },
     
-    saveCurrentMessages(question: string) {      
+    async saveCurrentMessages(question: string) {      
       if (this.currentMessages.length === 0) return;      
       
       this.chatHistory.push({
@@ -56,9 +57,11 @@ export const useChatStore = defineStore('chat', {
             id: this.nextId - 1,
             messages: [...this.currentMessages],
           }, question)
+      }    
+      
+      if(userInfoStore.uniqueName) {
+        await incrementMessages(userInfoStore.uniqueName);
       }
-
-      this.saveCountMessageToLocalStorage(this.countMessages + 1);
       
       this.currentMessages = [];
     },
@@ -69,12 +72,7 @@ export const useChatStore = defineStore('chat', {
 
     clearAllHistoryMessages() {
       this.chatHistory = [];
-    },
-
-    saveCountMessageToLocalStorage(countMessages: number) {
-      localStorage.setItem('count-sent-messages', JSON.stringify(countMessages));
-      this.countMessages++;
-    }
+    },    
   },
 
   getters: {    

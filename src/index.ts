@@ -11,17 +11,17 @@ const routes: Array<RouteRecordRaw> = [
       {
         path: '/info',
         name: 'info',
-        component: () => import('./Views/home_children/InfoView.vue')        
+        component: () => import('./Views/home_children/InfoView.vue'),
       },
       {
         path: '/settings',
         name: 'settings',
-        component: () => import('./Views/home_children/SettingsView.vue')        
+        component: () => import('./Views/home_children/SettingsView.vue')
       },
       {
         path: '/statistics',
         name: 'statistics',
-        component: () => import('./Views/home_children/StatisticsView.vue')        
+        component: () => import('./Views/home_children/StatisticsView.vue')
       },
     ]
   },
@@ -34,7 +34,11 @@ const routes: Array<RouteRecordRaw> = [
     path: '/chat',
     name: 'chat',
     component: () => import('./Views/ChatView.vue'),
-  }  
+  },
+  {
+    path: '/:pathMatch(.*)*', 
+    redirect: '/welcome' 
+  }
 ]
 
 const router = createRouter({
@@ -49,11 +53,20 @@ router.beforeEach((to, from, next) => {
 
   countVisits++;
   localStorage.setItem('count-visits', JSON.stringify(countVisits));
+  
 
   if (countVisits === 1 && to.path !== '/welcome') {
     next('/welcome');
     return;
   }  
+
+  const uniqueName = localStorage.getItem('uniqueName');
+  const isProtectedRoute = to.path === '/' || to.path.startsWith('/info') || to.path.startsWith('/settings') || to.path.startsWith('/statistics');
+
+  if (isProtectedRoute && !uniqueName) {    
+    next('/welcome');
+    return;
+  }
 
   next();
 });

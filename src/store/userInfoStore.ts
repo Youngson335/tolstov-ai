@@ -49,7 +49,7 @@ export const useUserInfoStore = defineStore('user-info', {
             localStorage.removeItem('uniqueName')
         },
 
-        initUserInfo(userModel: UserInfoModel) {            
+        initUserInfo(userModel: UserInfoModel | null) {            
             if(userModel) {
                 this.hasUserAuth = true;
 
@@ -65,7 +65,8 @@ export const useUserInfoStore = defineStore('user-info', {
 
                 this.setUniqueNameToLocalStorage(userModel.uniqueName);
             } else {
-                this.hasUserAuth = false;
+                this.removeUniqueNameFromLocalStorage();
+                this.hasUserAuth = false;                
 
                 this.id = null;
                 this.uniqueName = '';
@@ -75,9 +76,7 @@ export const useUserInfoStore = defineStore('user-info', {
                 this.createdAt = null;
                 this.countSentMessages = null;
                 this.countVisits = null;
-                this.updatedAt = null; 
-
-                this.removeUniqueNameFromLocalStorage();
+                this.updatedAt = null;                 
             }            
         },
 
@@ -89,6 +88,10 @@ export const useUserInfoStore = defineStore('user-info', {
             } else {
                 this.hasUserAuth = false;
             }
+        },
+
+        exitFromProfile() {
+            this.initUserInfo(null);
         }
     }
 })

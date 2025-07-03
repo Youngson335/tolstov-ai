@@ -1,12 +1,15 @@
 <template>
-  <form class="vue-auth-form">
+  <form
+    class="vue-auth-form"
+    @submit.prevent="onSaveUserInfo"
+    @keydown.enter="onSaveUserInfo"
+  >
     <div v-if="!isEditForm">
       <div
         class="vue-auth-form__item"
-        @click="onStartEditForm"
         v-if="userInfoStore.hasUserAuth !== null"
       >
-        <vue-button>{{ authTitle }}</vue-button>
+        <vue-button @click="onStartEditForm">{{ authTitle }}</vue-button>
       </div>
     </div>
     <div v-if="isEditForm">
@@ -25,19 +28,19 @@
       <div class="vue-auth-form__item">
         <vue-text-input v-model="uniqueNameValue" :placeholder="'user-name'" />
       </div>
-      <div class="vue-auth-form__item" v-if="authNameBtn === AuthNameBtn.AUTH">
-        <vue-button @click="onEditStateAuthForm"> Нет user-name? </vue-button>
-      </div>
       <div class="vue-auth-form__item" v-if="hasAuthError">
         <vue-error :error="hasAuthError" />
       </div>
       <div class="vue-auth-form__item">
         <vue-button
           @click="onSaveUserInfo"
-          :enabled="isValidForm && !hasAuthError"
+          :enabled="isValidForm && !hasAuthError && !isProgressRequest"
         >
           Сохранить
         </vue-button>
+      </div>
+      <div class="vue-auth-form__item" v-if="authNameBtn === AuthNameBtn.AUTH">
+        <vue-button @click="onEditStateAuthForm"> Нет user-name? </vue-button>
       </div>
     </div>
   </form>
@@ -53,7 +56,7 @@ import { NotificationScoped } from "../../notification/notificationStore";
 
 enum AuthNameBtn {
   AUTH = "Авторизоваться",
-  REG = "Зарегестрироваться",
+  REG = "Зарегистрироваться",
 }
 
 enum AuthTitle {
@@ -71,6 +74,7 @@ const familyName = ref("");
 const surNameValue = ref("");
 const uniqueNameValue = ref("");
 const isEditForm = ref(false);
+const isProgressRequest = ref(false);
 const authNameBtn = ref<AuthNameBtn>(AuthNameBtn.AUTH);
 const authTitle = ref<AuthTitle>(AuthTitle.AUTH);
 const authState = ref<AuthState>(AuthState.AUTH);
@@ -101,16 +105,20 @@ const onStartEditForm = () => {
   isEditForm.value = true;
 };
 
-const onSaveUserInfo = () => {
+const onSaveUserInfo = async () => {
   if (authState.value === AuthState.REG) {
-    userInfoStore.setUserInfo(
+    isProgressRequest.value = true;
+    await userInfoStore.setUserInfo(
       surNameValue.value,
       nameValue.value,
       familyName.value,
       uniqueNameValue.value
     );
+    isProgressRequest.value = false;
   } else if (authState.value === AuthState.AUTH) {
-    userInfoStore.getUserInfo(uniqueNameValue.value);
+    isProgressRequest.value = true;
+    await userInfoStore.getUserInfo(uniqueNameValue.value);
+    isProgressRequest.value = false;
   }
 };
 
