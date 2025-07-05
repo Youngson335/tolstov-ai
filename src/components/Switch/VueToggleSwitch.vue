@@ -1,11 +1,16 @@
 <template>
-  <div class="toggle-switch">
+  <div
+    class="toggle-switch"
+    :class="{ not_selected: props.modelValue === null }"
+  >
     <div class="toggle-options">
       <button
         v-for="option in options"
         :key="option.id"
         class="toggle-option"
-        :class="{ active: props.modelValue === option.id }"
+        :class="{
+          active: props.modelValue === option.id,
+        }"
         :disabled="option.disabled ? option.disabled : false"
         @click="selectOption(option.id)"
       >
@@ -22,7 +27,7 @@ import { computed } from "vue";
 import type ToggleSwitchOption from "./ToggleSwitchOption";
 
 const props = defineProps<{
-  modelValue: number;
+  modelValue: number | null;
   options: ToggleSwitchOption[];
 }>();
 
@@ -68,6 +73,7 @@ button:disabled {
   background-color: var(--dark-violet);
   box-shadow: var(--toggle-box-shadow);
   overflow: hidden;
+  border: 1px solid rgba(0, 0, 0, 0) !important;
 
   .toggle-options {
     position: relative;
@@ -116,5 +122,8 @@ button:disabled {
     transition: var(--toggle-transition);
     z-index: 1;
   }
+}
+.not_selected {
+  border: 1px solid var(--violet) !important;
 }
 </style>

@@ -8,7 +8,7 @@ import type { ResponseError } from "../ResponseError";
 
 const notificationStore = useNotificationStore();
 
-const getUserInfoByUniqueName = async (uniqueName: string) => {
+const getUserInfoByUniqueName = async (uniqueName: string) => {  
     let response_err: null | ResponseError = null;
     const response = await fetch(`${api}${apiRoutes.user}/${uniqueName}`)
     .then(async (response) => {

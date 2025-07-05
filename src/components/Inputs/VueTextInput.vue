@@ -5,25 +5,42 @@
     v-model="internalValue"
     :placeholder="internalPlaceholder"
     class="vue-text-input"
+    :disabled="props.disabled ? props.disabled : false"
   />
 </template>
 <script lang="ts" setup>
-import { defineProps, defineEmits, ref, computed } from "vue";
+import { defineProps, defineEmits, ref, computed, onMounted, watch } from "vue";
 
 const props = defineProps<{
   modelValue: string;
   placeholder?: string;
+  disabled?: boolean;
 }>();
 const emits = defineEmits(["update:modelValue"]);
 
 const internalValue = ref(props.modelValue);
+
+watch(
+  () => props.modelValue,
+  (newModelValue: string) => {
+    internalValue.value = newModelValue;
+  }
+);
 
 const onInput = () => {
   emits("update:modelValue", internalValue.value);
 };
 
 const internalPlaceholder = computed(() => {
-  return props.placeholder ? props.placeholder : "";
+  if (props.placeholder && !props.modelValue) {
+    return props.placeholder;
+  } else {
+    return;
+  }
+});
+
+onMounted(() => {
+  emits("update:modelValue", internalValue.value);
 });
 </script>
 <style lang="scss">
@@ -39,6 +56,9 @@ const internalPlaceholder = computed(() => {
   &::placeholder {
     color: var(--light-gray);
     font-size: 16px;
+  }
+  &:disabled {
+    opacity: 0.4;
   }
 }
 </style>

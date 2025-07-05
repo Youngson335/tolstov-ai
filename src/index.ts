@@ -16,7 +16,19 @@ const routes: Array<RouteRecordRaw> = [
       {
         path: '/settings',
         name: 'settings',
-        component: () => import('./Views/home_children/SettingsView.vue')
+        component: () => import('./Views/home_children/SettingsView.vue'),            
+        children: [
+          {
+            path: '/settings/ai',
+            name: 'ai-settings',
+            component: () => import('./Views/home_children/settings_children/AiSettingsView.vue'),            
+          },
+          {
+            path: '/settings/user',
+            name: 'user-settings',
+            component: () => import('./Views/home_children/settings_children/UserSettingsView.vue'),            
+          }
+        ]
       },
       {
         path: '/statistics',
