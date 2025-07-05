@@ -22,8 +22,15 @@
     <section class="home-view__main">
       <vue-main>
         <router-view v-slot="{ Component, route }">
-          <transition :name="transitionName" mode="out-in">
-            <component :is="Component" :key="route.path" />
+          <transition
+            :name="shouldAnimate(route) ? transitionName : 'none'"
+            mode="out-in"
+          >
+            <component
+              :is="Component"
+              :key="route.path"
+              :user-info="userInfo"
+            />
           </transition>
         </router-view>
       </vue-main>
@@ -34,7 +41,7 @@
   </div>
 </template>
 <script lang="ts" setup>
-import { ref, watch } from "vue";
+import { computed, ref, watch } from "vue";
 import initStore from "../store/initStore";
 import VueToggleSwitch from "../components/Switch/VueToggleSwitch.vue";
 import type ToggleSwitchOption from "../components/Switch/ToggleSwitchOption";
@@ -43,10 +50,13 @@ import VueButton from "../components/Buttons/VueButton.vue";
 import router from "../index";
 import { useRoute } from "vue-router";
 import { useUserInfoStore } from "../store/userInfoStore";
+import type { UserFIO } from "../components/User/UserFIO";
 
 enum MenuRoutes {
   INFO = "/info",
   SETTINGS = "/settings",
+  SETTINGS_AI = "/settings/ai",
+  SETTINGS_USER = "/settings/user",
   STATISTICS = "/statistics",
 }
 
@@ -58,6 +68,14 @@ enum MenuId {
 
 const route = useRoute();
 const userInfoStore = useUserInfoStore();
+
+const userInfo = computed((): UserFIO => {
+  return {
+    userFamilyName: userInfoStore.userFamilyName,
+    userName: userInfoStore.userName,
+    userSurName: userInfoStore.userSurName,
+  };
+});
 
 const activeMenuItemId = ref(1);
 const menuItems: ToggleSwitchOption[] = [
@@ -78,12 +96,35 @@ const menuItems: ToggleSwitchOption[] = [
   },
 ];
 
+const settingsOption: ToggleSwitchOption[] = [
+  {
+    id: MenuId.SETTINGS,
+    name: "Юзер",
+    route: MenuRoutes.SETTINGS_USER,
+  },
+  {
+    id: MenuId.SETTINGS,
+    name: "ai",
+    route: MenuRoutes.SETTINGS_AI,
+  },
+];
+
 const transitionName = ref("slide-left"); // Начальное направление анимации
+const shouldAnimate = (route: any): boolean => {
+  const pathsToAnimate = [
+    MenuRoutes.INFO,
+    MenuRoutes.SETTINGS,
+    MenuRoutes.STATISTICS,
+  ];
+  return pathsToAnimate.includes(route.path);
+};
 const prevIndex = ref(MenuId.INFO);
 
 const menuItemsOrder = {
   [MenuRoutes.INFO]: 1,
   [MenuRoutes.SETTINGS]: 2,
+  [MenuRoutes.SETTINGS_AI]: 2,
+  [MenuRoutes.SETTINGS_USER]: 2,
   [MenuRoutes.STATISTICS]: 3,
 };
 
@@ -123,10 +164,21 @@ const parseQuery = () => {
 };
 
 const setActiveMenu = (path: string) => {
-  const activeMenu = menuItems.find((menuItem: ToggleSwitchOption) => {
+  let activeMenu = menuItems.find((menuItem: ToggleSwitchOption) => {
     return menuItem.route === path;
   });
-  activeMenuItemId.value = activeMenu!.id;
+  if (!activeMenu) {
+    activeMenu = settingsOption.find((settingOption: ToggleSwitchOption) => {
+      return settingOption.route === path;
+    });
+    if (activeMenu) {
+      activeMenuItemId.value = activeMenu.id;
+    } else {
+      activeMenuItemId.value = MenuId.INFO;
+    }
+  } else {
+    activeMenuItemId.value = activeMenu.id;
+  }
 };
 
 const goToPage = (path: string) => {

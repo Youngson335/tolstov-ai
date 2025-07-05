@@ -2,6 +2,9 @@ import { defineStore } from "pinia";
 import type { UserInfoModel } from "../components/User/UserInfoModel";
 import setNewUser from "../api/post/setNewUser";
 import getUserInfoByUniqueName from "../api/get/getUserInfoByUniqueName";
+import updateUserInfo from "../api/post/updateUserInfo";
+import {  reactive } from "vue";
+import type { UserFIO } from "../components/User/UserFIO";
 
 interface StateUserInfo extends UserInfoModel {
     hasUserAuth: boolean | null,    
@@ -9,12 +12,12 @@ interface StateUserInfo extends UserInfoModel {
 }
 
 export const useUserInfoStore = defineStore('user-info', {
-    state: (): StateUserInfo => ({
+    state: (): StateUserInfo => reactive({
         id: null,
         userName: '',
         userSurName: '',
         userFamilyName: '',
-        uniqueName: '',
+        uniqueName: localStorage.getItem('uniqueName') ?? '',
         hasUserAuth: null,        
         createdAt: null,
         updatedAt: null,
@@ -36,9 +39,14 @@ export const useUserInfoStore = defineStore('user-info', {
             this.hasUserAuth = true;
         }, 
 
-        async getUserInfo(uniqueName: string) {
+        async getUserInfo(uniqueName: string) {                    
             const responseUserModel = await getUserInfoByUniqueName(uniqueName);
             this.initUserInfo(responseUserModel);
+        },    
+        
+        async updateUserInfo(userModel: UserFIO, uniqueName: string) {
+            const updatedUser = await updateUserInfo(userModel, uniqueName);
+            console.log('updateUserInfo', updatedUser)
         },
 
         setUniqueNameToLocalStorage(uniqueName: string) {
@@ -49,7 +57,7 @@ export const useUserInfoStore = defineStore('user-info', {
             localStorage.removeItem('uniqueName')
         },
 
-        initUserInfo(userModel: UserInfoModel | null) {            
+        initUserInfo(userModel: UserInfoModel | null) {                 
             if(userModel) {
                 this.hasUserAuth = true;
 
