@@ -65,6 +65,7 @@
                 'response-message__disabled':
                   group.response.id < internalResponses.length,
               }"
+              :should-animate="group.response.id >= internalResponses.length"
               :key="group.response.id"
             />
           </div>

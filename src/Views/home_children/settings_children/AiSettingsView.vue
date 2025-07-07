@@ -18,8 +18,8 @@
           @click="onAddNewSettingsAi"
           :enabled="
             textButtonSettingsAi === TextButtonSettingsAi.SAVE &&
-            isProcessRequest
-              ? isValidDraftValue
+            !isProcessRequest
+              ? isValidDraftValue && true
               : true
           "
         >
