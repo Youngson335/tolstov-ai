@@ -36,7 +36,7 @@
       </vue-main>
     </section>
     <div class="home-view__exit-profile" @click="onExitFromProfile">
-      <vue-button>Выйти из профиля</vue-button>
+      <vue-red-button>Выйти из профиля</vue-red-button>
     </div>
   </div>
 </template>
@@ -51,6 +51,7 @@ import router from "../index";
 import { useRoute } from "vue-router";
 import { useUserInfoStore } from "../store/userInfoStore";
 import type { UserFIO } from "../components/User/UserFIO";
+import VueRedButton from "../components/Buttons/VueRedButton.vue";
 
 enum MenuRoutes {
   INFO = "/info",

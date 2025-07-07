@@ -22,7 +22,8 @@ export const useUserInfoStore = defineStore('user-info', {
         createdAt: null,
         updatedAt: null,
         countVisits: null,
-        countSentMessages: null
+        countSentMessages: null,
+        aiDrafts: []        
     }),
     actions: {
         async setUserInfo(surName: string, name: string, familyName: string, uniqueName: string) {            
@@ -69,7 +70,8 @@ export const useUserInfoStore = defineStore('user-info', {
                 this.createdAt = userModel.createdAt;
                 this.countSentMessages = userModel.countSentMessages;
                 this.countVisits = userModel.countVisits;
-                this.updatedAt = userModel.updatedAt;                
+                this.updatedAt = userModel.updatedAt;      
+                this.aiDrafts = userModel.aiDrafts;          
 
                 this.setUniqueNameToLocalStorage(userModel.uniqueName);
             } else {
@@ -84,7 +86,8 @@ export const useUserInfoStore = defineStore('user-info', {
                 this.createdAt = null;
                 this.countSentMessages = null;
                 this.countVisits = null;
-                this.updatedAt = null;                 
+                this.updatedAt = null;    
+                this.aiDrafts = [];
             }            
         },
 

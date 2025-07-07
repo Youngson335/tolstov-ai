@@ -68,7 +68,7 @@ import router from "../..";
 const userInfoStore = useUserInfoStore();
 
 const onGoToSettingsPage = () => {
-  router.push("/settings");
+  router.push("/settings/user");
 };
 </script>
 <style lang="scss">
@@ -76,8 +76,8 @@ const onGoToSettingsPage = () => {
   width: calc(100% - 50px);
   background: var(--dark-violet);
   min-height: 50vh;
-  padding: 15px;
-  border-radius: var(--radius);
+  padding: var(--padding-block);
+  border-radius: calc(var(--padding-block) + var(--radius));
   &__user-info {
     &-item {
       margin-bottom: 5px;
