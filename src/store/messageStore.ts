@@ -53,10 +53,20 @@ export const useChatStore = defineStore('chat', {
           messages: [...this.currentMessages],
         });
       } else if(aiMode.value === AiModelMode.PRO) {
+        if(aiModelConfigStore.activeAiDraftId) {
+          const aiSettingsDraft = userInfoStore.aiDrafts.find((item) => {
+            return item.id === aiModelConfigStore.activeAiDraftId;
+          })
+          aiStore.setNewAnswer({
+            id: this.nextId - 1,
+            messages: [...this.currentMessages],
+          },  `${aiSettingsDraft!.text}${question}`)
+        } else {
           aiStore.setNewAnswer({
             id: this.nextId - 1,
             messages: [...this.currentMessages],
           }, question)
+        }          
       }    
       
       if(userInfoStore.uniqueName) {

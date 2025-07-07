@@ -3,12 +3,13 @@ import AiModelMode from "../enums/AiModelMode";
 import AiModelModeId from "../enums/AiModelModeId";
 
 interface AiModelConfigState {
-    aiModeValue: AiModeValue,
+    aiModeValue: AiModeValue,    
+    activeAiDraftId: number | null
 }
 
 interface AiModeValue {
     aiMode: AiModelMode,
-    aiModeId: AiModelModeId,
+    aiModeId: AiModelModeId,    
 }
 
 const useAiModelConfigStore = defineStore('ai-model-config', {
@@ -16,7 +17,8 @@ const useAiModelConfigStore = defineStore('ai-model-config', {
         aiModeValue: {
             aiMode: AiModelMode.BASE,
             aiModeId: AiModelModeId.BASE
-        }
+        },     
+        activeAiDraftId: Number(localStorage.getItem('draft-id')) ?? null,   
     }),
     actions: {
         toggleAiConfig(aiModeId: AiModelModeId) {
@@ -52,6 +54,41 @@ const useAiModelConfigStore = defineStore('ai-model-config', {
             const response = JSON.parse(localAiMode) as AiModeValue;
             this.aiModeValue.aiMode = response.aiMode;
             this.aiModeValue.aiModeId = response.aiModeId;
+        },
+        selectAiDraftId(id: number) {                  
+            this.initActiveDraftId(id);
+        },
+        initActiveDraftId(id: number | null) {
+            const DRAFT_ID = 'draft-id';
+                        
+            let storedId: number | null = null;
+            try {
+                const rawValue = localStorage.getItem(DRAFT_ID);
+                if (rawValue !== null && rawValue !== 'null') {
+                    storedId = JSON.parse(rawValue);
+                }
+            } catch (e) {
+                console.error('Failed to parse draft ID from localStorage', e);
+                storedId = null;
+            }
+            
+            if (id === null) {
+                localStorage.setItem(DRAFT_ID, 'null'); // Явно записываем строку 'null'
+                this.activeAiDraftId = null;
+                return;
+            }
+            
+            if (id !== undefined && id !== null) {
+                localStorage.setItem(DRAFT_ID, JSON.stringify(id));
+                this.activeAiDraftId = id;
+                return;
+            }
+
+            if (storedId !== null ) {
+                this.activeAiDraftId = storedId;
+            } else {
+                this.activeAiDraftId = null;
+            }
         }
     },
     getters: {

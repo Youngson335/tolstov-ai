@@ -6,8 +6,8 @@
 .statistics-view {
   width: calc(100% - 50px);
   background: var(--dark-violet);
-  padding: 20px;
+  padding: var(--padding-block);
   min-height: 50vh;
-  border-radius: var(--radius);
+  border-radius: calc(var(--padding-block) + var(--radius));
 }
 </style>

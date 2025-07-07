@@ -8,6 +8,7 @@
           <vue-toggle-switch
             :options="toggleModelOptions"
             v-model="selectedIdModel"
+            :is-animation="true"
             @input="setNewAiMode($event)"
           />
         </div>

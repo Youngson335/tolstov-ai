@@ -1,7 +1,7 @@
 <template>
   <div class="user-settings-view">
-    <div class="settings-view__edit-user-info">
-      <p>Личная информация</p>
+    <div class="user-settings-view__info">
+      <p class="user-settings-view__info--p">Личная информация</p>
       <vue-edit-user-info :user-info="props.userInfo" />
     </div>
   </div>
@@ -15,4 +15,12 @@ const props = defineProps<{
   userInfo: UserFIO;
 }>();
 </script>
-<style lang=""></style>
+<style lang="scss">
+.user-settings-view {
+  &__info {
+    &--p {
+      margin: 10px 0;
+    }
+  }
+}
+</style>

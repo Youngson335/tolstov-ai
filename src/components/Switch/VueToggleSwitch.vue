@@ -29,6 +29,7 @@ import type ToggleSwitchOption from "./ToggleSwitchOption";
 const props = defineProps<{
   modelValue: number | null;
   options: ToggleSwitchOption[];
+  isAnimation?: boolean;
 }>();
 
 const emit = defineEmits(["update:modelValue", "input"]);
@@ -47,6 +48,7 @@ const sliderStyle = computed(() => {
   return {
     width: `${optionWidth}%`,
     transform: `translateX(${activeIndex * 100}%)`,
+    transition: props.isAnimation ? "var(--toggle-transition)" : "none",
   };
 });
 </script>
