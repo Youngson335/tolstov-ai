@@ -18,7 +18,11 @@
       :placeholder="placeholderInput"
       class="vue-edit-user-info--input"
     />
-    <vue-button @click="onStartEditUserInfo" class="vue-edit-user-info--button">
+    <vue-button
+      @click="onStartEditUserInfo"
+      class="vue-edit-user-info--button"
+      :enabled="userInfoStore.id ? true : false"
+    >
       {{ stateButtonText }}
     </vue-button>
   </form>

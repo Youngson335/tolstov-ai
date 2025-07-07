@@ -19,8 +19,8 @@ const props = withDefaults(
 .vue-red-button {
   height: 100%;
   border: none;
-  background-color: #530404;
-  color: #a10606;
+  background-color: var(--dark-violet);
+  color: #650303;
   padding: 12px 16px;
   border-radius: 18px;
   cursor: pointer;

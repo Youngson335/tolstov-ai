@@ -1,7 +1,7 @@
 <template>
   <div class="vue-response" @click="onCopyResponse(props.response)">
     <!-- Лоадер "думания" -->
-    <div v-if="isLoading" class="thinking-loader">
+    <div v-if="isLoading && shouldAnimate" class="thinking-loader">
       <div class="dot"></div>
       <div class="dot"></div>
       <div class="dot"></div>
@@ -29,6 +29,7 @@ import NotificationStatus from "../../notification/NotificationStatus";
 const props = defineProps<{
   response: string | null;
   aiMode: AiModelMode;
+  shouldAnimate?: boolean;
 }>();
 
 const aiStore = useResponsesAIStore();
@@ -48,6 +49,13 @@ const isImage = computed(() => {
 });
 
 const startTyping = () => {
+  if (!props.shouldAnimate) {
+    // Если анимация не нужна, сразу показываем текст
+    displayedText.value = props.response || "";
+    isLoading.value = false;
+    return;
+  }
+
   isLoading.value = true;
   if (props.aiMode === AiModelMode.BASE) {
     displayedText.value = "";

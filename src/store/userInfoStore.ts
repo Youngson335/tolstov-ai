@@ -21,8 +21,8 @@ export const useUserInfoStore = defineStore('user-info', {
         hasUserAuth: null,        
         createdAt: null,
         updatedAt: null,
-        countVisits: null,
-        countSentMessages: null,
+        countVisits: 0,
+        countSentMessages: 0,
         aiDrafts: []        
     }),
     actions: {
@@ -84,8 +84,8 @@ export const useUserInfoStore = defineStore('user-info', {
                 this.userName = '';
                 this.userSurName = '';
                 this.createdAt = null;
-                this.countSentMessages = null;
-                this.countVisits = null;
+                this.countSentMessages = 0;
+                this.countVisits = 0;
                 this.updatedAt = null;    
                 this.aiDrafts = [];
             }            

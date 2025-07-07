@@ -58,7 +58,7 @@ button:disabled {
   opacity: 0.4;
 }
 .toggle-switch {
-  --toggle-height: 40px;
+  --toggle-height: 43px;
   --toggle-border-radius: 18px;
   --toggle-bg: #f5f5f5;
   --toggle-active-bg: #ffffff;

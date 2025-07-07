@@ -37,6 +37,7 @@ import VueSwitchButton from "../Switch/VueSwitchButton.vue";
 import { useAiModelConfigStore } from "../../store/aiModelConfigStore";
 import VueSmallRedButton from "../Buttons/VueSmallRedButton.vue";
 import deleteAiDraft from "../../api/delete/deleteAiDraft";
+import { useUserInfoStore } from "../../store/userInfoStore";
 
 const props = defineProps<{
   draft: AiDraftSettings;
@@ -46,6 +47,7 @@ const props = defineProps<{
 }>();
 
 const aiConfigStore = useAiModelConfigStore();
+const userInfoStore = useUserInfoStore();
 
 const isShowDescription = ref(false);
 const isProcessDelete = ref(false);
@@ -63,7 +65,15 @@ const onSwitchSettings = (val: boolean) => {
   }
 };
 
+const checkIsActiveSwitch = (id: number) => {
+  const isActive = id === aiConfigStore.activeAiDraftId;
+  if (isActive) {
+    aiConfigStore.initActiveDraftId(null);
+  }
+};
+
 const onDeleteAiDraft = async () => {
+  checkIsActiveSwitch(props.draft.id!);
   isProcessDelete.value = true;
   await deleteAiDraft(props.draft.id!, props.uniqueName);
   await props.getUserInfo(props.uniqueName);

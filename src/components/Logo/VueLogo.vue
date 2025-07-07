@@ -13,7 +13,7 @@ onMounted(() => {
 </script>
 <style lang="scss">
 .vue-logo {
-  color: var(--violet);
+  color: var(--gray);
   & span {
     font-weight: 400;
   }
