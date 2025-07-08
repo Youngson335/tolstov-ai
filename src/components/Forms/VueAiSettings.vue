@@ -108,7 +108,7 @@ const onDeleteAiDraft = async () => {
         align-items: start;
         gap: 5px;
         & p {
-          color: var(--light-gray);
+          color: var(--white);
           font-style: italic;
         }
       }

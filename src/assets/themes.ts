@@ -32,7 +32,7 @@ const themes: Theme[] = [
     {
         id: ThemesID.AMBER,
         base_color: '#b45309',
-        border_color: '#4a220c',
+        border_color: '#dd7b42',
         background: '#78350f',
     },
     {

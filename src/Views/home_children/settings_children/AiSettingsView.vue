@@ -149,7 +149,9 @@ const onCancelProcess = () => {
   }
   &__component {
     margin-bottom: 10px;
-    padding: 15px 0px;
+    padding: 15px;
+    background: var(--base-background);
+    border-radius: var(--radius);
   }
 }
 </style>

@@ -34,15 +34,14 @@
 <script lang="ts" setup>
 import { computed, ref, watch } from "vue";
 import VueSpinner from "../Loaders/VueSpinner.vue";
-
-interface StatItem {
-  title: string;
-  value: number;
-}
+import type { StatisticsItem } from "../../store/statisticsStore";
+import { useStatisticsStore } from "../../store/statisticsStore";
 
 const props = defineProps<{
-  statItem: StatItem;
+  statItem: StatisticsItem;
 }>();
+
+const statisticsStore = useStatisticsStore();
 
 const isInternalLoading = ref(false);
 
@@ -61,7 +60,7 @@ watch(
   }
 );
 
-if (props.statItem.value === 0) {
+if (props.statItem.value === 0 && !statisticsStore.uploadFlag) {
   isInternalLoading.value = true;
 }
 
@@ -74,6 +73,15 @@ const formattedValue = computed(() => {
   }
   return props.statItem.value.toLocaleString();
 });
+
+watch(
+  () => statisticsStore.uploadFlag,
+  (newVal: null | 1) => {
+    if (newVal === 1) {
+      isInternalLoading.value = false;
+    }
+  }
+);
 </script>
 
 <style lang="scss" scoped>

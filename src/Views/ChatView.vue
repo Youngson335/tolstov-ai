@@ -65,7 +65,7 @@
                 'response-message__disabled':
                   group.response.id < internalResponses.length,
               }"
-              :should-animate="group.response.id >= internalResponses.length"
+              :should-animate="responsesAiStore.isProcess"
               :key="group.response.id"
             />
           </div>
@@ -73,8 +73,9 @@
       </vue-chat-process>
       <vue-smart-input @new-message="scrollToBottom" />
       <p class="chat-view__description">
-        Перед отправкой сообщения убедитесь, что ваш запрос оформлен в виде
-        вопроса, иначе диалог может показаться немного бессмысленным!
+        Перед отправкой сообщения в BASE версии убедитесь, что ваш запрос
+        оформлен в виде вопроса, иначе диалог может показаться немного
+        бессмысленным!
       </p>
     </div>
   </div>
