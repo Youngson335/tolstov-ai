@@ -5,6 +5,10 @@ import getUserInfoByUniqueName from "../api/get/getUserInfoByUniqueName";
 import updateUserInfo from "../api/post/updateUserInfo";
 import {  reactive } from "vue";
 import type { UserFIO } from "../components/User/UserFIO";
+import { useAiModelConfigStore } from "./aiModelConfigStore";
+import AiModelModeId from "../enums/AiModelModeId";
+
+const aiConfigStore = useAiModelConfigStore();
 
 interface StateUserInfo extends UserInfoModel {
     hasUserAuth: boolean | null,    
@@ -102,7 +106,8 @@ export const useUserInfoStore = defineStore('user-info', {
         },
 
         exitFromProfile() {
-            this.initUserInfo(null);
+            aiConfigStore.toggleAiConfig(AiModelModeId.PRO);
+            this.initUserInfo(null);            
         }
     }
 })

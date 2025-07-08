@@ -13,6 +13,19 @@
         :user-info="props.userInfo"
       />
     </router-view>
+
+    <div class="settings-view__toggle-model">
+      <p>Выбрать модель</p>
+      <div class="settings-view__toggle-model--toggler">
+        <vue-toggle-switch
+          :options="toggleModelOptions"
+          v-model="selectedIdModel"
+          :is-animation="true"
+          @input="setNewAiMode($event)"
+        />
+      </div>
+    </div>
+
     <div class="settings-view__themes">
       <h3>Изменить тему приложения</h3>
       <div class="settings-view__themes-cards">
@@ -27,7 +40,7 @@
   </div>
 </template>
 <script lang="ts" setup>
-import { defineProps, ref } from "vue";
+import { defineProps, ref, computed } from "vue";
 import type { UserFIO } from "../../components/User/UserFIO";
 import VueToggleSwitch from "../../components/Switch/VueToggleSwitch.vue";
 import type ToggleSwitchOption from "../../components/Switch/ToggleSwitchOption";
@@ -36,6 +49,9 @@ import router from "../..";
 import VueThemeCard from "../../components/Cards/VueThemeCard.vue";
 import themes from "../../assets/themes";
 import useThemesStore from "../../store/themesStore";
+import AiModelModeId from "../../enums/AiModelModeId";
+import AiModelMode from "../../enums/AiModelMode";
+import { useAiModelConfigStore } from "../../store/aiModelConfigStore";
 
 enum SettingsId {
   USER = 1,
@@ -54,6 +70,7 @@ const props = defineProps<{
 const route = useRoute();
 
 const themesStore = useThemesStore();
+const aiModelConfigStore = useAiModelConfigStore();
 
 const settingsOption: ToggleSwitchOption[] = [
   {
@@ -67,6 +84,28 @@ const settingsOption: ToggleSwitchOption[] = [
     route: SettingsRoutes.AI,
   },
 ];
+
+//код выбора модели
+const toggleModelOptions = computed((): ToggleSwitchOption[] => {
+  return [
+    {
+      id: AiModelModeId.BASE,
+      name: "tolstov-ai",
+      span: AiModelMode.BASE,
+    },
+    {
+      id: AiModelModeId.PRO,
+      name: "tolstov-ai",
+      span: AiModelMode.PRO,
+    },
+  ];
+});
+const selectedIdModel = ref<AiModelModeId.PRO | AiModelModeId.BASE>(
+  aiModelConfigStore.aiModeValue.aiModeId
+);
+const setNewAiMode = (aiId: AiModelModeId) => {
+  aiModelConfigStore.setNewAiConfig(aiId);
+};
 
 const settingOptionValue = ref<SettingsId | null>(null);
 const settingOptionObj = ref<ToggleSwitchOption | null>(null);
@@ -124,7 +163,7 @@ parseQuery();
   &__themes {
     display: flex;
     flex-direction: column;
-    margin-top: 20px;
+    margin: 20px 0;
     & h3 {
       margin-bottom: 10px;
     }
@@ -133,6 +172,12 @@ parseQuery();
       justify-content: start;
       flex-wrap: wrap;
       gap: 10px;
+    }
+  }
+  &__toggle-model {
+    margin: 20px 0;
+    & p {
+      text-align: center;
     }
   }
 }

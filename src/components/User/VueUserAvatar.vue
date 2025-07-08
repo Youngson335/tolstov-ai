@@ -4,14 +4,16 @@
   </div>
 </template>
 <script lang="ts" setup>
-import { computed } from "vue";
-import { useUserInfoStore } from "../../store/userInfoStore";
+import { computed, defineProps } from "vue";
+import type UserInfo from "./UserInfo";
 
-const userStore = useUserInfoStore();
+const props = defineProps<{
+  userInfo: UserInfo;
+}>();
 
 const getUserInitials = computed(() => {
-  const nameInitial = userStore.userName[0];
-  const familyNameInitial = userStore.userFamilyName[0];
+  const nameInitial = props.userInfo.userName[0];
+  const familyNameInitial = props.userInfo.userFamilyName[0];
   return `${nameInitial}${familyNameInitial}`;
 });
 </script>

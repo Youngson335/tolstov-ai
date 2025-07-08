@@ -57,7 +57,7 @@ const internalValue = computed({
     width: 100%;
     height: 100%;
     display: block;
-    background-color: #e9e9eb;
+    background-color: var(--base-color);
     border-radius: 16px;
     cursor: pointer;
     transition: all 0.2s ease-out;

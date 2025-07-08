@@ -29,6 +29,11 @@
         <img :src="arrow_icon" alt="Отправить" />
       </div>
     </div>
+    <div class="vue-smart-input__label" v-if="isValidLabel">
+      <vue-notification-label>
+        Нейросеть работает с включенным режимом!
+      </vue-notification-label>
+    </div>
   </div>
 </template>
 
@@ -46,6 +51,8 @@ import { arrow_icon } from "../../assets/icons";
 import { useRoute } from "vue-router";
 import router from "../..";
 import { useResponsesAIStore } from "../../store/responsesAIStore";
+import VueNotificationLabel from "../Labels/VueNotificationLabel.vue";
+import { useAiModelConfigStore } from "../../store/aiModelConfigStore";
 
 const props = defineProps<{
   isChatPage?: boolean;
@@ -55,6 +62,7 @@ const route = useRoute();
 
 const chatStore = useChatStore();
 const aiStore = useResponsesAIStore();
+const aiConfigStore = useAiModelConfigStore();
 
 const currentMessage = ref("");
 const textarea = ref<HTMLTextAreaElement>();
@@ -63,6 +71,13 @@ const internalMessage = computed(() => {
   return chatStore.currentMessages;
 });
 const placeholderText = "Введите сообщение...";
+const isValidLabel = computed(() => {
+  return (
+    !!(aiConfigStore.getAiModeId === 2) &&
+    !!aiConfigStore.activeAiDraftId &&
+    route.path === "/chat"
+  );
+});
 
 const isProcessResponse = computed(() => {
   return aiStore.isProcess;
@@ -189,6 +204,16 @@ const sendMessages = async () => {
     border-radius: var(--radius);
     position: relative;
     transition: all 0.4s ease;
+  }
+
+  &__label {
+    position: absolute;
+    top: -30px;
+    left: 0;
+    right: 0;
+    margin: 0 auto;
+    display: flex;
+    justify-content: center;
   }
 
   &__button {

@@ -31,13 +31,14 @@
       <div class="vue-auth-form__item" v-if="hasAuthError">
         <vue-error :error="hasAuthError" />
       </div>
-      <div class="vue-auth-form__item">
+      <div class="vue-auth-form__item vue-auth-form__item-save">
         <vue-button
           @click="onSaveUserInfo"
           :enabled="isValidForm && !hasAuthError && !isProgressRequest"
         >
           Сохранить
         </vue-button>
+        <vue-spinner :is-loading="isProgressRequest" />
       </div>
       <div class="vue-auth-form__item" v-if="authNameBtn === AuthNameBtn.AUTH">
         <vue-button @click="onEditStateAuthForm"> Нет user-name? </vue-button>
@@ -53,6 +54,7 @@ import VueError from "../Error/VueError.vue";
 import { useUserInfoStore } from "../../store/userInfoStore";
 import { useNotificationStore } from "../../notification/notificationStore";
 import { NotificationScoped } from "../../notification/notificationStore";
+import VueSpinner from "../Loaders/VueSpinner.vue";
 
 enum AuthNameBtn {
   AUTH = "Авторизоваться",
@@ -117,7 +119,9 @@ const onSaveUserInfo = async () => {
     isProgressRequest.value = false;
   } else if (authState.value === AuthState.AUTH) {
     isProgressRequest.value = true;
-    await userInfoStore.getUserInfo(uniqueNameValue.value);
+    await userInfoStore
+      .getUserInfo(uniqueNameValue.value)
+      .catch(() => (isProgressRequest.value = false));
     isProgressRequest.value = false;
   }
 };
@@ -139,8 +143,14 @@ watch(
 </script>
 <style lang="scss">
 .vue-auth-form {
+  width: 100%;
   &__item {
     margin-bottom: 10px;
+    &-save {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
   }
 }
 </style>
