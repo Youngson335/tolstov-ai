@@ -130,7 +130,7 @@ const onEditStateAuthForm = () => {
 
 watch(
   () => uniqueNameValue.value,
-  (newVal: string) => {
+  () => {
     if (notificationStore.notification.text) {
       notificationStore.clearNotification();
     }
