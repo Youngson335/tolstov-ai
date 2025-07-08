@@ -34,12 +34,12 @@ button:disabled {
   align-items: center;
   justify-content: center;
   text-wrap: nowrap;
-  background-color: var(--dark-violet);
-  color: var(--violet);
+  background-color: var(--base-background);
+  color: var(--white);
   padding: 12px 16px;
   border-radius: var(--radius);
   transition: all 0.3s ease;
-  border: none;
+  border: 1px solid var(--base-border-color);
   &--p {
     margin-right: 5px;
     @media (max-width: 820px) {
@@ -47,7 +47,7 @@ button:disabled {
     }
   }
   &--span {
-    background-color: var(--violet);
+    background-color: var(--base-color);
     color: var(--white);
     padding: 2px 5px;
     border-radius: var(--radius);

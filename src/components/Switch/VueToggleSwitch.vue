@@ -64,7 +64,7 @@ button:disabled {
   --toggle-active-bg: #ffffff;
   --toggle-text-color: #333333;
   --toggle-active-text-color: var(--white);
-  --toggle-slider-color: var(--violet);
+  --toggle-slider-color: var(--base-color);
   --toggle-box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   --toggle-transition: all 0.3s ease;
 
@@ -72,7 +72,7 @@ button:disabled {
   display: inline-block;
   width: 100%;
   border-radius: var(--toggle-border-radius);
-  background-color: var(--dark-violet);
+  background-color: var(--gray);
   box-shadow: var(--toggle-box-shadow);
   overflow: hidden;
   border: 1px solid rgba(0, 0, 0, 0) !important;
@@ -110,7 +110,7 @@ button:disabled {
     &.active {
       color: var(--toggle-active-text-color);
       & span {
-        background-color: var(--dark-violet);
+        background-color: var(--gray);
       }
     }
   }
@@ -126,6 +126,6 @@ button:disabled {
   }
 }
 .not_selected {
-  border: 1px solid var(--violet) !important;
+  background-color: var(--black);
 }
 </style>

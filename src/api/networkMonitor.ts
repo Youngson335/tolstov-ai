@@ -118,14 +118,14 @@ export const startNetWorkMonitoring = () => {
   networkMonitor.startMonitoring();
 
   networkMonitor.onWeakConnection((event) => {
-    notificationStore.setNotification(event.detail.message, NotificationStatus.WARNING)
+    notificationStore.setNotification(event.detail.message, 'Error', NotificationStatus.WARNING)
     _count_error++;  
   });
 
   networkMonitor.onConnectionRestored((event) => {
     if(_count_error > 0) {    
       _count_error = 0;
-      notificationStore.setNotification(event.detail.message, NotificationStatus.SUCCESS)
+      notificationStore.setNotification(event.detail.message, 'Error', NotificationStatus.SUCCESS)
       setTimeout(() => {
         notificationStore.clearNotification();
       }, 2000);

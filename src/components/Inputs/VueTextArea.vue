@@ -77,8 +77,8 @@ watch(internalPlaceholder, () => {
 
 <style lang="scss">
 .vue-text-area {
-  background-color: var(--black);
-  border: 1px solid var(--violet);
+  background-color: var(--gray);
+  border: 1px solid var(--dark-gray);
   padding: 12px 16px;
   width: 100%;
   border-radius: 18px;

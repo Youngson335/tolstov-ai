@@ -4,28 +4,39 @@
     :class="{ 'vue-ai-settings-delete': isProcessDelete }"
   >
     <div class="vue-ai-settings__item">
-      <div class="vue-ai-settings__item-title">
-        <h4>{{ internalDrafts.title }}</h4>
+      <div class="vue-ai-settings__info">
+        <div class="vue-ai-settings__item-title">
+          <h4>{{ internalDrafts.title }}</h4>
+        </div>
+
+        <div class="vue-ai-settings__item-description">
+          <p
+            v-if="!isShowDescription"
+            class="vue-ai-settings__item-details"
+            @click="isShowDescription = !isShowDescription"
+          >
+            Подробнее
+          </p>
+          <div class="vue-ai-settings__item-details-block">
+            <p v-if="isShowDescription">"{{ internalDrafts.text }}"</p>
+            <div class="vue-ai-settings__item-delete">
+              <vue-small-red-button
+                v-if="isShowDescription"
+                @click="onDeleteAiDraft"
+              >
+                Удалить
+              </vue-small-red-button>
+              <vue-spinner :is-loading="isProcessDelete" />
+            </div>
+          </div>
+        </div>
       </div>
 
-      <vue-switch-button
-        :model-value="props.isSelected"
-        @update:modelValue="onSwitchSettings"
-      />
-    </div>
-    <div class="vue-ai-settings__item-description">
-      <p
-        v-if="!isShowDescription"
-        class="vue-ai-settings__item-details"
-        @click="isShowDescription = !isShowDescription"
-      >
-        Подробнее
-      </p>
-      <div class="vue-ai-settings__item-details-block">
-        <p v-if="isShowDescription">{{ internalDrafts.text }}</p>
-        <vue-small-red-button v-if="isShowDescription" @click="onDeleteAiDraft">
-          Удалить
-        </vue-small-red-button>
+      <div class="vue-ai-settings__item-switch">
+        <vue-switch-button
+          :model-value="props.isSelected"
+          @update:modelValue="onSwitchSettings"
+        />
       </div>
     </div>
   </form>
@@ -37,7 +48,7 @@ import VueSwitchButton from "../Switch/VueSwitchButton.vue";
 import { useAiModelConfigStore } from "../../store/aiModelConfigStore";
 import VueSmallRedButton from "../Buttons/VueSmallRedButton.vue";
 import deleteAiDraft from "../../api/delete/deleteAiDraft";
-import { useUserInfoStore } from "../../store/userInfoStore";
+import VueSpinner from "../Loaders/VueSpinner.vue";
 
 const props = defineProps<{
   draft: AiDraftSettings;
@@ -47,7 +58,6 @@ const props = defineProps<{
 }>();
 
 const aiConfigStore = useAiModelConfigStore();
-const userInfoStore = useUserInfoStore();
 
 const isShowDescription = ref(false);
 const isProcessDelete = ref(false);
@@ -85,6 +95,9 @@ const onDeleteAiDraft = async () => {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    &-title {
+      margin-bottom: 5px;
+    }
     &-details {
       text-decoration: underline;
       cursor: pointer;
@@ -94,7 +107,21 @@ const onDeleteAiDraft = async () => {
         justify-content: start;
         align-items: start;
         gap: 5px;
+        & p {
+          color: var(--light-gray);
+          font-style: italic;
+        }
       }
+    }
+    &-delete {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    &-switch {
+      display: flex;
+      justify-self: end;
+      min-width: 50px;
     }
   }
   &-delete {

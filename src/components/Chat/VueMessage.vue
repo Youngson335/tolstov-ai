@@ -51,7 +51,7 @@ watch(
 
   &.right {
     align-self: flex-end;
-    background-color: var(--violet);
+    background-color: var(--base-color);
     color: white;
 
     &::after {
@@ -63,7 +63,7 @@ watch(
       height: 20px;
       border: 0 solid transparent;
       border-top-width: 12px;
-      border-top-color: var(--violet);
+      border-top-color: var(--base-color);
       border-radius: 0 0 0 20px;
       transform: rotate(45deg);
       transform-origin: 0 0;

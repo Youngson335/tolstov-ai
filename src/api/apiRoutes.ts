@@ -5,7 +5,8 @@ const apiRoutes = {
     incrementMessages: '/increment-messages',
     incrementSession: '/increment-session',
     updateUser: '/update_user',
-    aiDraft: '/ai-draft'
+    aiDraft: '/ai-draft',
+    usersStatistics: '/users_statistics'
 }
 
 export default apiRoutes;

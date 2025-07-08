@@ -1,5 +1,5 @@
 import api from "../api";
-import apiRoutes from "../routes";
+import apiRoutes from "../apiRoutes";
 import type { UserInfoModel } from "../../components/User/UserInfoModel";
 import type UserInfo from "../../components/User/UserInfo";
 import { useNotificationStore } from "../../notification/notificationStore";

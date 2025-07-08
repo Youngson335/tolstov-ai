@@ -8,6 +8,6 @@
 .vue-label {
   display: inline-block;
   font-size: 12px;
-  color: var(--violet);
+  color: var(--light-gray);
 }
 </style>

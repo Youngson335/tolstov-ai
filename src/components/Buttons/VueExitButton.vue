@@ -19,8 +19,8 @@ const props = withDefaults(
 .vue-red-button {
   height: 100%;
   border: none;
-  background-color: var(--dark-violet);
-  color: #650303;
+  background-color: #410909;
+  color: #7e1919;
   padding: 12px 16px;
   border-radius: 18px;
   cursor: pointer;
@@ -29,6 +29,7 @@ const props = withDefaults(
   display: flex;
   justify-content: center;
   align-items: center;
+  border: 1px solid #650303;
   @media (hover: hover) and (pointer: fine) {
     &:hover {
       opacity: 0.7;

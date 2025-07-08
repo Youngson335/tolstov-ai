@@ -18,13 +18,12 @@
       :placeholder="placeholderInput"
       class="vue-edit-user-info--input"
     />
-    <vue-button
-      @click="onStartEditUserInfo"
-      class="vue-edit-user-info--button"
-      :enabled="userInfoStore.id ? true : false"
-    >
-      {{ stateButtonText }}
-    </vue-button>
+    <div class="vue-edit-user-info__button">
+      <vue-button @click="onStartEditUserInfo" :enabled="!isRequestUpdateInfo">
+        {{ stateButtonText }}
+      </vue-button>
+      <vue-spinner :is-loading="isRequestUpdateInfo" />
+    </div>
   </form>
 </template>
 <script lang="ts" setup>
@@ -33,6 +32,7 @@ import type { UserFIO } from "../User/UserFIO";
 import { useUserInfoStore } from "../../store/userInfoStore";
 import VueTextInput from "../Inputs/VueTextInput.vue";
 import VueButton from "../Buttons/VueButton.vue";
+import VueSpinner from "../Loaders/VueSpinner.vue";
 
 enum StateButtonText {
   EDIT = "Редактировать",
@@ -56,8 +56,9 @@ const internalUserModel = ref<UserFIO>({
 const placeholderInput = computed((): string => {
   return "Загружаем...";
 });
+const isRequestUpdateInfo = ref(false);
 
-const onStartEditUserInfo = () => {
+const onStartEditUserInfo = async () => {
   isDisabledInput.value = !isDisabledInput.value;
   if (stateButtonText.value === StateButtonText.EDIT) {
     stateButtonText.value = StateButtonText.SAVE;
@@ -65,11 +66,13 @@ const onStartEditUserInfo = () => {
     stateButtonText.value = StateButtonText.EDIT;
   }
 
-  if (hasChangesModel.value) {
-    userInfoStore.updateUserInfo(
+  if (hasChangesModel.value && stateButtonText.value == StateButtonText.EDIT) {
+    isRequestUpdateInfo.value = true;
+    await userInfoStore.updateUserInfo(
       internalUserModel.value,
       userInfoStore.uniqueName
     );
+    isRequestUpdateInfo.value = false;
   }
 };
 
@@ -120,6 +123,14 @@ watch(
   &--input {
     width: 45%;
     min-width: 200px;
+  }
+  &__button {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    & .vue-spinner-block {
+      margin-left: 10px;
+    }
   }
 }
 </style>

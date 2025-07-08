@@ -84,7 +84,7 @@
 import VueSmartInput from "../components/Inputs/VueSmartInput.vue";
 import VueMessage from "../components/Chat/VueMessage.vue";
 import { useChatStore } from "../store/messageStore";
-import { computed, ref, nextTick, watch } from "vue";
+import { computed, ref, nextTick, watch, onUnmounted, onMounted } from "vue";
 import type { ChatMessage } from "../store/messageStore";
 import VueChatProcess from "../components/Chat/VueChatProcess.vue";
 import { useResponsesAIStore } from "../store/responsesAIStore";
@@ -105,6 +105,7 @@ import { startNetWorkMonitoring } from "../api/networkMonitor";
 import router from "../index";
 import initStore from "../store/initStore";
 import { useUserInfoStore } from "../store/userInfoStore";
+import { NetworkMonitor } from "../api/networkMonitor";
 
 const toggleModelOptions = computed((): ToggleSwitchOption[] => {
   return [
@@ -150,6 +151,8 @@ const internalHistoryMessages = computed((): ChatMessage[] => {
 const internalResponses = computed(() => {
   return responsesAiStore.responsesAI;
 });
+const networkInstance = NetworkMonitor.getInstance();
+
 const groupedMessages = computed(() => {
   return [...internalHistoryMessages.value].reverse().map((question) => {
     const response = internalResponses.value.find(
@@ -179,7 +182,13 @@ const onStartNewChat = () => {
   responsesAiStore.isProcess = false;
 };
 
-startNetWorkMonitoring();
+onMounted(() => {
+  startNetWorkMonitoring();
+});
+onUnmounted(() => {
+  networkInstance.stopMonitoring();
+  networkInstance.removeListeners();
+});
 
 watch(groupedMessages, scrollToBottom, { deep: true });
 
@@ -292,10 +301,10 @@ initStore();
   align-self: flex-end;
   max-width: 80%;
   &__disabled {
-    background-color: var(--dark-violet) !important;
-    color: var(--violet) !important;
+    background-color: var(--base-background) !important;
+    color: var(--base-color) !important;
     &::after {
-      border-top-color: var(--dark-violet) !important;
+      border-top-color: var(--base-background) !important;
     }
   }
 }

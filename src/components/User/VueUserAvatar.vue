@@ -27,7 +27,7 @@ const getUserInitials = computed(() => {
   }
   & p {
     text-transform: uppercase;
-    background-color: var(--violet);
+    background-color: var(--base-background-color);
     width: 50px;
     height: 50px;
     display: flex;
@@ -37,8 +37,7 @@ const getUserInitials = computed(() => {
     font-weight: 600;
     width: 100%;
     height: 100%;
-    background-color: var(--dark-violet);
-    color: var(--gray);
+    color: var(--base-color);
     border: 1px solid;
   }
 }

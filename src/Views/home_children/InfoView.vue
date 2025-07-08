@@ -74,7 +74,7 @@ const onGoToSettingsPage = () => {
 <style lang="scss">
 .info-view {
   width: calc(100% - 50px);
-  background: var(--dark-violet);
+  background: var(--gray);
   min-height: 50vh;
   padding: var(--padding-block);
   border-radius: calc(var(--padding-block) + var(--radius));

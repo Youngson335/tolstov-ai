@@ -1,9 +1,11 @@
 import { defineStore } from "pinia";
 import { useUserInfoStore } from "./userInfoStore";
+import getUsersStatistics from "../api/get/getUsersStatistics";
+import type { UserStatisticsResponse } from "../api/get/getUsersStatistics";
 
 const userInfoStore = useUserInfoStore();
 
-const useStatisticsStore = defineStore('statistics', {
+export const useStatisticsStore = defineStore('statistics', {
     state: () => ({
         userVisits: {
             title: 'Кол-во посещений приложения',
@@ -23,11 +25,14 @@ const useStatisticsStore = defineStore('statistics', {
         },
     }),
     actions: {
-        initStatistics() {            
-            this.userVisits.value = userInfoStore.countVisits;
+        async initStatistics() {            
+            const { all_users, all_sent_messages } = await getUsersStatistics() as UserStatisticsResponse;
+            
+            this.userVisits.value =  userInfoStore.countVisits;
             this.userCountSentMessages.value = userInfoStore.countSentMessages;
+            this.allVisits.value = all_users;
+            this.allCountSentMessages.value = all_sent_messages;
+            
         }
     }
 })
-
-export default useStatisticsStore;

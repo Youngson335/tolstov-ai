@@ -150,7 +150,7 @@ onUnmounted(() => {
   transition: all 0.3s ease;
   &:active {
     scale: 1.05;
-    color: var(--violet);
+    color: var(--base-color);
   }
 
   &::after {

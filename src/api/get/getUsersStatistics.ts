@@ -3,19 +3,18 @@ import apiRoutes from "../apiRoutes"
 import { useNotificationStore } from "../../notification/notificationStore";
 import NotificationStatus from "../../notification/NotificationStatus";
 import { NotificationScoped } from "../../notification/notificationStore";
-import type { UserInfoModel } from "../../components/User/UserInfoModel";
 import type { ResponseError } from "../ResponseError";
+
+export interface UserStatisticsResponse {
+    all_users: number,
+    all_sent_messages: number,
+}
 
 const notificationStore = useNotificationStore();
 
-const incrementMessages = async (uniqueName: string) => {
+const getUsersStatistics = async () => {  
     let response_err: null | ResponseError = null;
-    const response = await fetch(`${api}${apiRoutes.chat}/${uniqueName}${apiRoutes.incrementMessages}`, {
-        method: "PATCH",     
-         headers: {
-          "Content-Type": "application/json",          
-        },   
-    })
+    const response = await fetch(`${api}${apiRoutes.user}${apiRoutes.usersStatistics}`)
     .then(async (response) => {
         if (!response.ok) {
           response_err = await response.json();
@@ -23,16 +22,16 @@ const incrementMessages = async (uniqueName: string) => {
         }
         return response.json();
       })
-    .then((data) => {      
+    .then((data: UserStatisticsResponse) => {      
         return data;
       })
     .catch((err) => {
         console.error("Ошибка запроса:", err);        
-        notificationStore.setNotification(response_err!.error, '', NotificationStatus.ERROR, NotificationScoped.CHAT)
+        notificationStore.setNotification(response_err!.error, '', NotificationStatus.ERROR, NotificationScoped.AUTH)
         throw err;
     });
 
-    return response as UserInfoModel;
+    return response as UserStatisticsResponse;
 }
 
-export default incrementMessages;
+export default getUsersStatistics;

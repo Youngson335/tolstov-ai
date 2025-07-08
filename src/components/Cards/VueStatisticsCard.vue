@@ -24,11 +24,16 @@
       <h3 class="stat-card__title">{{ statItem.title }}</h3>
       <p class="stat-card__value">{{ formattedValue }}</p>
     </div>
+
+    <div class="stat-card-loading">
+      <vue-spinner v-model:is-loading="isInternalLoading" />
+    </div>
   </div>
 </template>
 
 <script lang="ts" setup>
-import { computed } from "vue";
+import { computed, ref, watch } from "vue";
+import VueSpinner from "../Loaders/VueSpinner.vue";
 
 interface StatItem {
   title: string;
@@ -38,6 +43,27 @@ interface StatItem {
 const props = defineProps<{
   statItem: StatItem;
 }>();
+
+const isInternalLoading = ref(false);
+
+watch(
+  () => props.statItem.value,
+  (newVal) => {
+    if (newVal === 0) {
+      isInternalLoading.value = true;
+    } else if (newVal > 0) {
+      async () =>
+        await new Promise((resolve) => {
+          setTimeout(resolve, 1000);
+        });
+      isInternalLoading.value = false;
+    }
+  }
+);
+
+if (props.statItem.value === 0) {
+  isInternalLoading.value = true;
+}
 
 const formattedValue = computed(() => {
   if (props.statItem.value >= 1000000) {
@@ -59,14 +85,15 @@ const formattedValue = computed(() => {
   --trend-up-color: #10b981;
   --trend-down-color: #ef4444;
 
-  border-radius: 12px;
+  border-radius: var(--radius);
   padding: 20px;
   position: relative;
   overflow: hidden;
   transition: all 0.3s ease;
   display: flex;
   flex-direction: column;
-  background-color: #121121;
+  background: var(--base-background);
+  position: relative;
 
   &--highlight {
     border-left: 4px solid var(--highlight-color);
@@ -77,12 +104,12 @@ const formattedValue = computed(() => {
     width: 48px;
     height: 48px;
     border-radius: 8px;
-    background: rgba(79, 70, 229, 0.1);
+    background: var(--base-background);
     display: flex;
     align-items: center;
     justify-content: center;
     margin-bottom: 16px;
-    color: var(--highlight-color);
+    color: var(--base-color);
 
     svg {
       width: 24px;
@@ -94,10 +121,16 @@ const formattedValue = computed(() => {
     flex: 1;
   }
 
+  &-loading {
+    position: absolute;
+    right: 10px;
+    bottom: 10px;
+  }
+
   &__title {
     font-size: 14px;
     font-weight: 500;
-    color: #6b7280;
+    color: var(--white);
     margin-bottom: 8px;
     line-height: 1.4;
   }
