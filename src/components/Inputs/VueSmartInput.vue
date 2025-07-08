@@ -184,7 +184,7 @@ const sendMessages = async () => {
     white-space: pre-wrap;
     min-height: 100px;
     padding: 10px;
-    border: 1px solid var(--light-gray);
+    border: 1px solid var(--dark-gray);
     background-color: var(--gray);
     border-radius: var(--radius);
     position: relative;

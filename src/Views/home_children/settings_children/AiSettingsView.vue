@@ -31,6 +31,7 @@
         >
           Отменить
         </vue-button>
+        <vue-spinner :is-loading="isProcessRequest" />
       </div>
     </div>
     <div class="ai-setting-view__settings-switch">
@@ -57,6 +58,7 @@ import setNewAiDrafts from "../../../api/post/setNewAiDraft";
 import VueAiSettings from "../../../components/Forms/VueAiSettings.vue";
 import { useUserInfoStore } from "../../../store/userInfoStore";
 import { useAiModelConfigStore } from "../../../store/aiModelConfigStore";
+import VueSpinner from "../../../components/Loaders/VueSpinner.vue";
 
 enum TextButtonSettingsAi {
   ADD = "Добавить",
@@ -113,6 +115,7 @@ const onAddNewSettingsAi = async () => {
 
     internalDraftValue.value = "";
     internalDraftTitle.value = "";
+    isProcessRequest.value = false;
   }
 };
 
@@ -136,6 +139,7 @@ const onCancelProcess = () => {
       }
       &__buttons {
         display: flex;
+        align-items: center;
         gap: 5px;
       }
     }
@@ -145,9 +149,7 @@ const onCancelProcess = () => {
   }
   &__component {
     margin-bottom: 10px;
-    padding: 15px;
-    border: 1px solid var(--violet);
-    border-radius: 32px;
+    padding: 15px 0px;
   }
 }
 </style>

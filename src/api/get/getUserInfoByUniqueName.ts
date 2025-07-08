@@ -1,5 +1,5 @@
 import api from "../api"
-import apiRoutes from "../routes"
+import apiRoutes from "../apiRoutes"
 import { useNotificationStore } from "../../notification/notificationStore";
 import NotificationStatus from "../../notification/NotificationStatus";
 import { NotificationScoped } from "../../notification/notificationStore";

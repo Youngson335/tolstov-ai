@@ -19,8 +19,9 @@ const props = withDefaults(
 .vue-button {
   height: 100%;
   border: none;
-  background-color: var(--violet);
+  background-color: var(--base-color);
   color: var(--white);
+  border: 1px solid var(--base-border-color);
   padding: 12px 16px;
   border-radius: 18px;
   cursor: pointer;

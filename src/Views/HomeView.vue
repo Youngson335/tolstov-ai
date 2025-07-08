@@ -82,7 +82,7 @@ const activeMenuItemId = ref(1);
 const menuItems: ToggleSwitchOption[] = [
   {
     id: MenuId.INFO,
-    name: "Информация",
+    name: "Инфо",
     route: MenuRoutes.INFO,
   },
   {
@@ -191,6 +191,10 @@ const onExitFromProfile = () => {
   router.push("/welcome");
 };
 
+if (route.path === "/") {
+  goToPage("/info");
+}
+
 parseQuery();
 initStore();
 </script>
@@ -214,14 +218,14 @@ initStore();
       display: flex;
       justify-content: center;
       align-items: center;
-      background-color: var(--dark-violet);
+      background-color: var(--gray);
       padding: 10px;
       border-radius: var(--radius);
       margin: 0 auto;
       margin-bottom: 15px;
       & span {
         display: inline-block;
-        background: var(--violet);
+        background: var(--base-color);
         padding: 0px 16px;
         border-radius: 18px;
         font-weight: 600;

@@ -13,6 +13,17 @@
         :user-info="props.userInfo"
       />
     </router-view>
+    <div class="settings-view__themes">
+      <h3>Изменить тему приложения</h3>
+      <div class="settings-view__themes-cards">
+        <vue-theme-card
+          v-for="theme of themes"
+          :key="theme.id"
+          :theme="theme"
+          @click="onEditColorTheme(theme.id)"
+        />
+      </div>
+    </div>
   </div>
 </template>
 <script lang="ts" setup>
@@ -22,6 +33,9 @@ import VueToggleSwitch from "../../components/Switch/VueToggleSwitch.vue";
 import type ToggleSwitchOption from "../../components/Switch/ToggleSwitchOption";
 import { useRoute } from "vue-router";
 import router from "../..";
+import VueThemeCard from "../../components/Cards/VueThemeCard.vue";
+import themes from "../../assets/themes";
+import useThemesStore from "../../store/themesStore";
 
 enum SettingsId {
   USER = 1,
@@ -39,10 +53,12 @@ const props = defineProps<{
 }>();
 const route = useRoute();
 
+const themesStore = useThemesStore();
+
 const settingsOption: ToggleSwitchOption[] = [
   {
     id: SettingsId.USER,
-    name: "Юзер",
+    name: "user",
     route: SettingsRoutes.USER,
   },
   {
@@ -66,6 +82,11 @@ const onSelectNewOption = (id: number) => {
     settingOptionValue.value = SettingsId.USER;
     initOption(settingsOption[0]);
   }
+};
+
+const onEditColorTheme = (themeId: number) => {
+  themesStore.initTheme(themeId);
+  themesStore.applyNewTheme();
 };
 
 const initOption = (option: ToggleSwitchOption) => {
@@ -93,12 +114,26 @@ parseQuery();
 <style lang="scss" scoped>
 .settings-view {
   width: calc(100% - 50px);
-  background: var(--dark-violet);
+  background: var(--gray);
   padding: var(--padding-block);
   min-height: 50vh;
   border-radius: calc(var(--padding-block) + var(--radius));
   & p {
     margin-bottom: 10px;
+  }
+  &__themes {
+    display: flex;
+    flex-direction: column;
+    margin-top: 20px;
+    & h3 {
+      margin-bottom: 10px;
+    }
+    &-cards {
+      display: flex;
+      justify-content: start;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
   }
 }
 </style>

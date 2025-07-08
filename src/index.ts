@@ -58,7 +58,7 @@ const router = createRouter({
   routes,
 });
 
-router.beforeEach((to, from, next) => {  
+router.beforeEach((to, _, next) => {  
   
   const storedCount = localStorage.getItem('count-visits');
   let countVisits = storedCount ? JSON.parse(storedCount) : 0;
