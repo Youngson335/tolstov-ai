@@ -1,11 +1,17 @@
 <template>
-  <div class="toggle-switch">
+  <div
+    class="toggle-switch"
+    :class="{ not_selected: props.modelValue === null }"
+  >
     <div class="toggle-options">
       <button
         v-for="option in options"
         :key="option.id"
         class="toggle-option"
-        :class="{ active: props.modelValue === option.id }"
+        :class="{
+          active: props.modelValue === option.id,
+        }"
+        :disabled="option.disabled ? option.disabled : false"
         @click="selectOption(option.id)"
       >
         {{ option.name }}
@@ -21,8 +27,9 @@ import { computed } from "vue";
 import type ToggleSwitchOption from "./ToggleSwitchOption";
 
 const props = defineProps<{
-  modelValue: number;
+  modelValue: number | null;
   options: ToggleSwitchOption[];
+  isAnimation?: boolean;
 }>();
 
 const emit = defineEmits(["update:modelValue", "input"]);
@@ -41,30 +48,34 @@ const sliderStyle = computed(() => {
   return {
     width: `${optionWidth}%`,
     transform: `translateX(${activeIndex * 100}%)`,
+    transition: props.isAnimation ? "var(--toggle-transition)" : "none",
   };
 });
 </script>
 
 <style lang="scss" scoped>
+button:disabled {
+  opacity: 0.4;
+}
 .toggle-switch {
-  --toggle-height: 40px;
-  --toggle-border-radius: 8px;
+  --toggle-height: 43px;
+  --toggle-border-radius: 18px;
   --toggle-bg: #f5f5f5;
   --toggle-active-bg: #ffffff;
   --toggle-text-color: #333333;
   --toggle-active-text-color: var(--white);
-  --toggle-slider-color: var(--violet);
+  --toggle-slider-color: var(--base-color);
   --toggle-box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   --toggle-transition: all 0.3s ease;
 
   position: relative;
   display: inline-block;
   width: 100%;
-  max-width: 300px;
   border-radius: var(--toggle-border-radius);
-  background-color: var(--dark-violet);
+  background-color: var(--gray);
   box-shadow: var(--toggle-box-shadow);
   overflow: hidden;
+  border: 1px solid rgba(0, 0, 0, 0) !important;
 
   .toggle-options {
     position: relative;
@@ -86,7 +97,7 @@ const sliderStyle = computed(() => {
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 0 12px;
+    padding: 0 5px;
     border: none;
     background: transparent;
     color: var(--white);
@@ -99,7 +110,7 @@ const sliderStyle = computed(() => {
     &.active {
       color: var(--toggle-active-text-color);
       & span {
-        background-color: var(--dark-violet);
+        background-color: var(--gray);
       }
     }
   }
@@ -113,5 +124,8 @@ const sliderStyle = computed(() => {
     transition: var(--toggle-transition);
     z-index: 1;
   }
+}
+.not_selected {
+  background-color: var(--black);
 }
 </style>

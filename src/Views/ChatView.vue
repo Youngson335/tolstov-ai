@@ -10,6 +10,9 @@
           :options="toggleModelOptions.find((item) => item.id === aiModeId)!"
           @change="aiModelConfigStore.toggleAiConfig($event)"
         />
+        <vue-button @click="onGoToHome">
+          <img :src="home_icon" alt="" />
+        </vue-button>
       </div>
       <div>
         <vue-notification
@@ -20,7 +23,9 @@
           @action="reloadPage"
           v-if="notification.status"
         >
-          <template #title> Ошибка </template>
+          <template #title>
+            {{ notification.title }}
+          </template>
           <template #description>
             <p>{{ notification.text }}</p>
           </template>
@@ -60,16 +65,22 @@
                 'response-message__disabled':
                   group.response.id < internalResponses.length,
               }"
+              :should-animate="responsesAiStore.isProcess"
               :key="group.response.id"
             />
           </div>
         </template>
       </vue-chat-process>
-      <vue-smart-input @new-message="scrollToBottom" />
-      <p class="chat-view__description">
-        Перед отправкой сообщения убедитесь, что ваш запрос оформлен в виде
-        вопроса, иначе диалог может показаться немного бессмысленным!
-      </p>
+
+      <div>
+        <vue-smart-input @new-message="scrollToBottom" />
+        <p class="chat-view__description" v-if="aiMode === AiModelMode.BASE">
+          Перед отправкой сообщения в BASE версию убедитесь, что ваш запрос
+          оформлен в виде вопроса, иначе диалог может показаться немного
+          бессмысленным!
+        </p>
+      </div>
+
     </div>
   </div>
 </template>
@@ -78,42 +89,57 @@
 import VueSmartInput from "../components/Inputs/VueSmartInput.vue";
 import VueMessage from "../components/Chat/VueMessage.vue";
 import { useChatStore } from "../store/messageStore";
-import { computed, ref, nextTick, watch } from "vue";
+import { computed, ref, nextTick, watch, onUnmounted, onMounted } from "vue";
 import type { ChatMessage } from "../store/messageStore";
 import VueChatProcess from "../components/Chat/VueChatProcess.vue";
 import { useResponsesAIStore } from "../store/responsesAIStore";
 import VueResponse from "../components/Chat/VueResponse.vue";
 import VueButton from "../components/Buttons/VueButton.vue";
-import { new_chat_icon } from "../assets/icons";
+import { home_icon, new_chat_icon } from "../assets/icons";
 import VueStartChatMessage from "../components/Welcome/VueStartChatMessage.vue";
 import { useAiModelConfigStore } from "../store/aiModelConfigStore";
 import AiModelMode from "../enums/AiModelMode";
 import AiModelModeId from "../enums/AiModelModeId";
 import VueNotification from "../components/Notification/VueNotification.vue";
-import { useNotificationStore } from "../notification/notification";
-import type { Notification } from "../notification/notification";
+import { useNotificationStore } from "../notification/notificationStore";
+import type { Notification } from "../notification/notificationStore";
 import NotificationStatus from "../notification/NotificationStatus";
 import VueToggleContent from "../components/Switch/VueToggleContent.vue";
 import type ToggleSwitchOption from "../components/Switch/ToggleSwitchOption";
+import { startNetWorkMonitoring } from "../api/networkMonitor";
+import router from "../index";
+import initStore from "../store/initStore";
+import { useUserInfoStore } from "../store/userInfoStore";
+import { NetworkMonitor } from "../api/networkMonitor";
 
-const toggleModelOptions: ToggleSwitchOption[] = [
-  {
-    id: AiModelModeId.BASE,
-    name: "tolstov-ai",
-    span: AiModelMode.BASE,
-  },
-  {
-    id: AiModelModeId.PRO,
-    name: "tolstov-ai",
-    span: AiModelMode.PRO,
-  },
-];
+const toggleModelOptions = computed((): ToggleSwitchOption[] => {
+  return [
+    {
+      id: AiModelModeId.BASE,
+      name: "tolstov-ai",
+      span: AiModelMode.BASE,
+      disabled: isModelProDisabled.value,
+    },
+    {
+      id: AiModelModeId.PRO,
+      name: "tolstov-ai",
+      span: AiModelMode.PRO,
+      disabled: isModelProDisabled.value,
+    },
+  ];
+});
 
 const chatProcess = ref<HTMLElement>();
 
 const chatStore = useChatStore();
 const aiModelConfigStore = useAiModelConfigStore();
 const notificationStore = useNotificationStore();
+const responsesAiStore = useResponsesAIStore();
+const userInfoStore = useUserInfoStore();
+
+const isModelProDisabled = computed(() => {
+  return userInfoStore.hasUserAuth ? false : true;
+});
 
 const aiMode = computed((): AiModelMode => {
   return aiModelConfigStore.aiModeValue.aiMode;
@@ -128,8 +154,10 @@ const internalHistoryMessages = computed((): ChatMessage[] => {
   return chatStore.chatHistory;
 });
 const internalResponses = computed(() => {
-  return useResponsesAIStore().responsesAI;
+  return responsesAiStore.responsesAI;
 });
+const networkInstance = NetworkMonitor.getInstance();
+
 const groupedMessages = computed(() => {
   return [...internalHistoryMessages.value].reverse().map((question) => {
     const response = internalResponses.value.find(
@@ -143,6 +171,9 @@ const groupedMessages = computed(() => {
 const reloadPage = () => {
   window.location.reload();
 };
+const onGoToHome = () => {
+  router.push("/info");
+};
 
 const scrollToBottom = async () => {
   await nextTick();
@@ -152,10 +183,24 @@ const scrollToBottom = async () => {
 };
 
 const onStartNewChat = () => {
-  chatStore.clearAllHistoryMessages();
+  chatStore.createNewChat();
 };
 
+onMounted(() => {
+  startNetWorkMonitoring();
+});
+onUnmounted(() => {
+  networkInstance.stopMonitoring();
+  networkInstance.removeListeners();
+  responsesAiStore.isProcess = false;
+  if (aiMode.value === AiModelMode.BASE) {
+    chatStore.createNewChat();
+  }
+});
+
 watch(groupedMessages, scrollToBottom, { deep: true });
+
+initStore();
 </script>
 
 <style lang="scss">
@@ -164,13 +209,25 @@ watch(groupedMessages, scrollToBottom, { deep: true });
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
+  max-width: 600px;
+  margin: 0 auto;
 
   &-image {
     margin-left: 5px;
   }
   &__buttons {
-    max-width: 200px;
+    max-width: 600px;
+    height: 50px;
+    margin: 0 auto;
+    width: 100%;
     margin-bottom: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 5%;
+    & .vue-button {
+      max-width: 150px;
+    }
   }
 
   &__description {
@@ -252,10 +309,10 @@ watch(groupedMessages, scrollToBottom, { deep: true });
   align-self: flex-end;
   max-width: 80%;
   &__disabled {
-    background-color: var(--dark-violet) !important;
-    color: var(--violet) !important;
+    background-color: var(--base-background) !important;
+    color: var(--base-color) !important;
     &::after {
-      border-top-color: var(--dark-violet) !important;
+      border-top-color: var(--base-background) !important;
     }
   }
 }

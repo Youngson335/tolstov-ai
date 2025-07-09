@@ -29,6 +29,11 @@
         <img :src="arrow_icon" alt="Отправить" />
       </div>
     </div>
+    <div class="vue-smart-input__label" v-if="isValidLabel">
+      <vue-notification-label>
+        Нейросеть работает с включенным режимом!
+      </vue-notification-label>
+    </div>
   </div>
 </template>
 
@@ -46,8 +51,8 @@ import { arrow_icon } from "../../assets/icons";
 import { useRoute } from "vue-router";
 import router from "../..";
 import { useResponsesAIStore } from "../../store/responsesAIStore";
+import VueNotificationLabel from "../Labels/VueNotificationLabel.vue";
 import { useAiModelConfigStore } from "../../store/aiModelConfigStore";
-import AiModelMode from "../../enums/AiModelMode";
 
 const props = defineProps<{
   isChatPage?: boolean;
@@ -66,8 +71,12 @@ const internalMessage = computed(() => {
   return chatStore.currentMessages;
 });
 const placeholderText = "Введите сообщение...";
-const aiMode = computed((): AiModelMode => {
-  return aiConfigStore.getAiMode;
+const isValidLabel = computed(() => {
+  return (
+    !!(aiConfigStore.getAiModeId === 2) &&
+    !!aiConfigStore.activeAiDraftId &&
+    route.path === "/chat"
+  );
 });
 
 const isProcessResponse = computed(() => {
@@ -137,7 +146,8 @@ const handleDelete = (e: KeyboardEvent) => {
 
 const sendMessages = async () => {
   isFocused.value = false;
-  if (route.path !== "chat") {
+  if (route.path !== "/chat") {
+    chatStore.createNewChat();
     router.push("/chat");
   }
   if (currentMessage.value.trim()) {
@@ -148,14 +158,10 @@ const sendMessages = async () => {
   chatStore.clearCurrentMessages();
 
   currentMessage.value = "";
+  textarea.value!.style.height = "auto";
 
   await nextTick();
 };
-
-//по хорошему этот блок кода нужно вынести в другое место
-if (chatStore.chatHistory.length <= 0) {
-  router.push("/");
-}
 </script>
 
 <style lang="scss">
@@ -194,11 +200,21 @@ if (chatStore.chatHistory.length <= 0) {
     white-space: pre-wrap;
     min-height: 100px;
     padding: 10px;
-    border: 1px solid var(--light-gray);
+    border: 1px solid var(--dark-gray);
     background-color: var(--gray);
-    border-radius: 20px;
+    border-radius: var(--radius);
     position: relative;
     transition: all 0.4s ease;
+  }
+
+  &__label {
+    position: absolute;
+    top: -30px;
+    left: 0;
+    right: 0;
+    margin: 0 auto;
+    display: flex;
+    justify-content: center;
   }
 
   &__button {

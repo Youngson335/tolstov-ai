@@ -15,8 +15,8 @@ const lineText = ((elClass: string) => {
             mask: "lines",
             onSplit: (self) => {
             split = gsap.from(self.lines, {
-                duration: 0.4,
-                yPercent: 100,
+                duration: 1,
+                xPercent: 50,
                 opacity: 0,
                 stagger: 0.1,
                 ease: "expo.out",
@@ -26,7 +26,7 @@ const lineText = ((elClass: string) => {
         });
 
         if(split) {
-            split.timeScale(0.4).play(0);
+            split.timeScale(1).play(0);
         };
     });
 })

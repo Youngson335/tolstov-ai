@@ -1,292 +1,281 @@
 <template>
-  <div class="home-view container">
-    <div class="home-view__start">
-      <vue-welcome class="home-view__start-welcome" />
-      <div class="home-view__toggle-model">
-        <p>Выбрать модель</p>
-        <div class="home-view__toggle-model--toggler">
-          <vue-toggle-switch
-            :options="toggleModelOptions"
-            v-model="selectedIdModel"
-            @input="setNewAiMode($event)"
-          />
-        </div>
+  <div class="home-view">
+    <header class="home-view__header">
+      <div class="home-view__header-profile">
+        <h2>
+          Личный
+          <span>кабинет</span>
+        </h2>
       </div>
-      <vue-smart-input :is-chat-page="false" />
-      <p>Слишком "умная" нейросеть</p>
-      <div class="home-view__start-stickers">
-        <vue-animated-stickers
-          :position="'left'"
-          :align="'unset'"
-          :stickers="duckStickers"
-          :interval="3000"
+      <div class="home-view__header-menu">
+        <vue-toggle-switch
+          v-model="activeMenuItemId"
+          :options="menuItems"
+          @input="onSwitchRoute"
         />
       </div>
-    </div>
-    <div class="home-view__block">
-      <vue-welcome class="home-view__block-welcome" />
-      <div class="home-view__sticker">
-        <vue-animated-stickers :stickers="stickers" :interval="3000" />
+      <div class="home-view__header-navigation">
+        <vue-button @click="goToPage('/welcome')">приветствие</vue-button>
+        <vue-button @click="goToPage('/chat')">чат</vue-button>
       </div>
-      <div class="home-view__description">
-        <vue-message
-          :is-animate="true"
-          :message="[
-            'Данная нейросеть создана для вашего развития! Чуть позже поймете, как она это делает)',
-          ]"
-        />
-        <div style="display: flex; justify-content: start; width: 100%">
-          <vue-response
-            :response="'Для лучшего качества ответа советую пройти регистрацию!)'"
-            :ai-mode="aiMode"
-          />
-        </div>
-      </div>
-      <div class="home-view__auth-info">
-        <div v-if="isUserRegister" class="home-view__avatar">
-          <vue-user-avatar />
-        </div>
-        <vue-auth-form v-else />
-      </div>
+    </header>
+    <section class="home-view__main">
+      <vue-main>
+        <router-view v-slot="{ Component, route }">
+          <transition
+            :name="shouldAnimate(route) ? transitionName : 'none'"
+            mode="out-in"
+          >
+            <component
+              :is="Component"
+              :key="route.path"
+              :user-info="userInfo"
+            />
+          </transition>
+        </router-view>
+      </vue-main>
+    </section>
+    <div class="home-view__exit-profile" @click="onExitFromProfile">
+      <vue-exit-button>Выйти из профиля</vue-exit-button>
     </div>
   </div>
 </template>
-
 <script lang="ts" setup>
-import VueWelcome from "../components/Welcome/VueWelcome.vue";
-import VueSmartInput from "../components/Inputs/VueSmartInput.vue";
-import VueMessage from "../components/Chat/VueMessage.vue";
-import VueAuthForm from "../components/Forms/VueAuthForm.vue";
-import VueUserAvatar from "../components/User/VueUserAvatar.vue";
-import VueResponse from "../components/Chat/VueResponse.vue";
-import { useUserInfoStore } from "../store/userInfoStore";
-import {
-  sticker_1,
-  sticker_2,
-  sticker_3,
-  sticker_4,
-  sticker_5,
-  sticker_6,
-  sticker_7,
-  sticker_8,
-  sticker_9,
-  sticker_10,
-  sticker_11,
-  sticker_12,
-  sticker_13,
-  sticker_14,
-  sticker_15,
-  sticker_16,
-  sticker_17,
-  sticker_18,
-  sticker_19,
-  sticker_20,
-  sticker_21,
-  sticker_22,
-} from "../assets/stickers";
-import VueAnimatedStickers from "../components/UI/VueAnimatedStickers.vue";
+import { computed, ref, watch } from "vue";
+import initStore from "../store/initStore";
 import VueToggleSwitch from "../components/Switch/VueToggleSwitch.vue";
-import { computed, ref } from "vue";
 import type ToggleSwitchOption from "../components/Switch/ToggleSwitchOption";
-import AiModelMode from "../enums/AiModelMode";
-import AiModelModeId from "../enums/AiModelModeId";
-import { useAiModelConfigStore } from "../store/aiModelConfigStore";
+import VueMain from "../components/Main/VueMain.vue";
+import VueButton from "../components/Buttons/VueButton.vue";
+import router from "../index";
+import { useRoute } from "vue-router";
+import { useUserInfoStore } from "../store/userInfoStore";
+import type { UserFIO } from "../components/User/UserFIO";
+import VueExitButton from "../components/Buttons/VueExitButton.vue";
 
+enum MenuRoutes {
+  INFO = "/info",
+  SETTINGS = "/settings",
+  SETTINGS_AI = "/settings/ai",
+  SETTINGS_USER = "/settings/user",
+  STATISTICS = "/statistics",
+}
+
+enum MenuId {
+  INFO = 1,
+  SETTINGS = 2,
+  STATISTICS = 3,
+}
+
+const route = useRoute();
 const userInfoStore = useUserInfoStore();
-const aiModelConfigStore = useAiModelConfigStore();
 
-const isUserRegister = computed(() => {
-  return userInfoStore.isUser;
-});
-const aiMode = computed((): AiModelMode => {
-  return AiModelMode.BASE;
+const userInfo = computed((): UserFIO => {
+  return {
+    userFamilyName: userInfoStore.userFamilyName,
+    userName: userInfoStore.userName,
+    userSurName: userInfoStore.userSurName,
+  };
 });
 
-const stickers = [
-  { id: 1, src: sticker_1 },
-  { id: 2, src: sticker_2 },
-  { id: 3, src: sticker_3 },
-  { id: 4, src: sticker_4 },
-  { id: 5, src: sticker_5 },
-  { id: 6, src: sticker_6 },
-  { id: 7, src: sticker_7 },
-  { id: 8, src: sticker_8 },
-  { id: 9, src: sticker_9 },
-  { id: 10, src: sticker_10 },
-  { id: 11, src: sticker_11 },
-  { id: 12, src: sticker_12 },
-  { id: 13, src: sticker_13 },
+const activeMenuItemId = ref(1);
+const menuItems: ToggleSwitchOption[] = [
+  {
+    id: MenuId.INFO,
+    name: "Инфо",
+    route: MenuRoutes.INFO,
+  },
+  {
+    id: MenuId.SETTINGS,
+    name: "Настройки",
+    route: MenuRoutes.SETTINGS,
+  },
+  {
+    id: MenuId.STATISTICS,
+    name: "Статистика",
+    route: MenuRoutes.STATISTICS,
+  },
 ];
 
-const duckStickers = [
-  { id: 1, src: sticker_10 },
-  { id: 2, src: sticker_11 },
-  { id: 3, src: sticker_12 },
-  { id: 4, src: sticker_13 },
-  { id: 5, src: sticker_14 },
-  { id: 6, src: sticker_15 },
-  { id: 7, src: sticker_16 },
-  { id: 8, src: sticker_17 },
-  { id: 9, src: sticker_18 },
-  { id: 10, src: sticker_19 },
-  { id: 11, src: sticker_20 },
-  { id: 12, src: sticker_21 },
-  { id: 13, src: sticker_22 },
+const settingsOption: ToggleSwitchOption[] = [
+  {
+    id: MenuId.SETTINGS,
+    name: "Юзер",
+    route: MenuRoutes.SETTINGS_USER,
+  },
+  {
+    id: MenuId.SETTINGS,
+    name: "ai",
+    route: MenuRoutes.SETTINGS_AI,
+  },
 ];
 
-const selectedIdModel = ref<AiModelModeId.PRO | AiModelModeId.BASE>(
-  aiModelConfigStore.aiModeValue.aiModeId
+const transitionName = ref("slide-left"); // Начальное направление анимации
+const shouldAnimate = (route: any): boolean => {
+  const pathsToAnimate = [
+    MenuRoutes.INFO,
+    MenuRoutes.SETTINGS,
+    MenuRoutes.STATISTICS,
+  ];
+  return pathsToAnimate.includes(route.path);
+};
+const prevIndex = ref(MenuId.INFO);
+
+const menuItemsOrder = {
+  [MenuRoutes.INFO]: 1,
+  [MenuRoutes.SETTINGS]: 2,
+  [MenuRoutes.SETTINGS_AI]: 2,
+  [MenuRoutes.SETTINGS_USER]: 2,
+  [MenuRoutes.STATISTICS]: 3,
+};
+
+watch(
+  () => route.path,
+  (newPath, oldPath) => {
+    const newIndex = menuItemsOrder[newPath as MenuRoutes];
+    const oldIndex = menuItemsOrder[oldPath as MenuRoutes];
+
+    transitionName.value = newIndex > oldIndex ? "slide-left" : "slide-right";
+    prevIndex.value = newIndex;
+    activeMenuItemId.value = prevIndex.value;
+  }
 );
 
-const toggleModelOptions: ToggleSwitchOption[] = [
-  {
-    id: AiModelModeId.BASE,
-    name: "tolstov-ai",
-    span: AiModelMode.BASE,
-  },
-  {
-    id: AiModelModeId.PRO,
-    name: "tolstov-ai",
-    span: AiModelMode.PRO,
-  },
-];
+const onSwitchRoute = async (menuId: MenuId) => {
+  await new Promise((resolve) => setTimeout(resolve, 50));
 
-const setNewAiMode = (aiId: AiModelModeId) => {
-  aiModelConfigStore.setNewAiConfig(aiId);
+  switch (menuId) {
+    case MenuId.INFO:
+      await router.push(MenuRoutes.INFO);
+      break;
+    case MenuId.SETTINGS:
+      await router.push(MenuRoutes.SETTINGS);
+      break;
+    case MenuId.STATISTICS:
+      await router.push(MenuRoutes.STATISTICS);
+      break;
+    default:
+      await router.push(MenuRoutes.INFO);
+  }
 };
-</script>
 
-<style lang="scss" scoped>
-.auth-block {
-  padding: 20px;
+const parseQuery = () => {
+  const path = route.path as MenuRoutes;
+  setActiveMenu(path);
+};
+
+const setActiveMenu = (path: string) => {
+  let activeMenu = menuItems.find((menuItem: ToggleSwitchOption) => {
+    return menuItem.route === path;
+  });
+  if (!activeMenu) {
+    activeMenu = settingsOption.find((settingOption: ToggleSwitchOption) => {
+      return settingOption.route === path;
+    });
+    if (activeMenu) {
+      activeMenuItemId.value = activeMenu.id;
+    } else {
+      activeMenuItemId.value = MenuId.INFO;
+    }
+  } else {
+    activeMenuItemId.value = activeMenu.id;
+  }
+};
+
+const goToPage = (path: string) => {
+  router.push(path);
+};
+
+const onExitFromProfile = () => {
+  userInfoStore.exitFromProfile();
+  router.push("/welcome");
+};
+
+if (route.path === "/") {
+  goToPage("/info");
+}
+
+parseQuery();
+initStore();
+</script>
+<style lang="scss">
+:root {
+  --animation-to-px: translateX(100vw);
+  --animation-back-px: translateX(-100vw);
 }
 .home-view {
-  height: 100vh;
+  max-width: 600px;
+  margin: 0 auto;
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
   align-items: center;
-  gap: 30px;
-  @media (max-width: 820px) {
-    height: 100%;
-    min-height: 100vh;
-    flex-direction: column-reverse;
-    gap: 0px;
-  }
+  flex-direction: column;
+  &__header {
+    width: calc(100% - 50px);
+    padding: 15px 0px;
 
-  &__block {
-    display: flex;
-    flex-direction: column;
-    width: 50%;
-
-    &-welcome {
-      display: none;
-      @media (max-width: 820px) {
-        display: block;
-        margin-top: 20px;
-      }
-    }
-    @media (max-width: 820px) {
-      height: 100%;
-      width: 100%;
-    }
-  }
-
-  &__toggle-model {
-    & p {
-      color: var(--white) !important;
-      font-size: 15px !important;
-      margin-bottom: 5px;
-    }
-    &--toggler {
-      width: 100%;
+    &-profile {
       display: flex;
       justify-content: center;
-      margin-bottom: 20px;
-    }
-  }
-  &__auth-info {
-    @media (max-height: 715px) {
-      margin-bottom: 20px;
-    }
-  }
-
-  &__avatar {
-    display: flex;
-    justify-content: end;
-  }
-
-  &__start {
-    display: flex;
-    flex-direction: column;
-    width: 100%;
-    height: 100vh;
-    justify-content: center;
-    border-right: 3px solid var(--light-gray);
-    padding-right: 10%;
-    @media (max-width: 820px) {
-      border: none;
-      padding-right: 0;
-      height: 100%;
-      margin-bottom: 10px;
-    }
-    &-welcome {
-      @media (max-width: 820px) {
-        display: none;
+      align-items: center;
+      background-color: var(--gray);
+      padding: 10px;
+      border-radius: var(--radius);
+      margin: 0 auto;
+      margin-bottom: 15px;
+      & span {
+        display: inline-block;
+        background: var(--base-color);
+        padding: 0px 16px;
+        border-radius: 18px;
+        font-weight: 600;
+        color: var(--white);
       }
     }
-
-    &-stickers {
-      @media (max-width: 820px) {
-        display: none;
-      }
-    }
-
-    & .vue-welcome {
-      margin: 20px 0px;
-    }
-    & .vue-smart-input {
-      margin-bottom: 10px;
-    }
-    & p {
-      font-size: 14px;
-      color: var(--light-gray);
-      font-weight: 100;
-      text-align: center;
-    }
-  }
-
-  &__sticker {
-    width: 100%;
-    display: flex;
-    justify-content: flex-end;
-    position: relative;
-    height: 120px;
-    overflow: hidden;
-
-    .sticker {
-      max-width: 100px;
-      width: 100%;
-      display: block;
-      position: absolute;
-      right: 0;
-    }
-  }
-
-  &__description {
-    max-width: 500px;
-    display: flex;
-    justify-content: flex-end;
-    align-items: flex-end;
-    flex-direction: column;
-    gap: 20px;
-    margin-bottom: 20px;
-
-    @media (max-width: 820px) {
+    &-menu {
       display: flex;
-      justify-content: end;
-      max-width: 100%;
-      width: 100%;
+      justify-content: center;
+      align-items: center;
+    }
+    &-navigation {
+      display: flex;
+      gap: 15px;
+      margin-top: 15px;
     }
   }
+  &__main {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+  }
+  &__exit-profile {
+    margin: 15px 0px;
+  }
+}
+.slide-left-enter-active,
+.slide-left-leave-active {
+  transition: all 0.2s ease;
+}
+
+.slide-left-enter-from {
+  transform: var(--animation-to-px);
+}
+
+.slide-left-leave-to {
+  transform: var(--animation-back-px);
+}
+
+/* Анимация справа налево */
+.slide-right-enter-active,
+.slide-right-leave-active {
+  transition: all 0.2s ease;
+}
+
+.slide-right-enter-from {
+  transform: var(--animation-back-px);
+}
+
+.slide-right-leave-to {
+  transform: var(--animation-to-px);
 }
 </style>

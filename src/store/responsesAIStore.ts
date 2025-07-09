@@ -27,7 +27,7 @@ export const useResponsesAIStore = defineStore('ai-store', {
                 return randomSticker; 
             }
                         
-            if (userStore.isUser && Math.random() > 0.7) {
+            if (userStore.hasUserAuth && Math.random() > 0.7) {
                 const randomPersonalized = personalizedRedirectPhrases[Math.floor(Math.random() * personalizedRedirectPhrases.length)];
                 return `${userStore.userName}${randomPersonalized}`;
             }

@@ -3,10 +3,13 @@ import { useResponsesAIStore } from './responsesAIStore';
 import { useAiModelConfigStore } from './aiModelConfigStore';
 import AiModelMode from '../enums/AiModelMode';
 import { computed } from 'vue';
+import { useUserInfoStore } from './userInfoStore';
+import incrementMessages from '../api/patch/incrementMessages';
 
 
 const aiStore = useResponsesAIStore();
 const aiModelConfigStore = useAiModelConfigStore();
+const userInfoStore = useUserInfoStore();
 
 const aiMode = computed((): AiModelMode => {
   return aiModelConfigStore.getAiMode;
@@ -17,20 +20,26 @@ export interface ChatMessage {
   messages: string[];
 }
 
+interface ChatStoreState {
+  chatHistory: ChatMessage[],
+  currentMessages: string[],
+  nextId: number  
+}
+
 export const useChatStore = defineStore('chat', {
-  state: () => ({
+  state: (): ChatStoreState => ({
     chatHistory: [] as ChatMessage[],
     currentMessages: [] as string[],
-    nextId: 1,
+    nextId: 1,    
   }),
 
   actions: {    
-    addMessageToCurrent(text: string) {
+    addMessageToCurrent(text: string) {      
       if (!text.trim()) return;
       this.currentMessages = [...this.currentMessages, text];
     },
     
-    saveCurrentMessages(question: string) {      
+    async saveCurrentMessages(question: string) {      
       if (this.currentMessages.length === 0) return;      
       
       this.chatHistory.push({
@@ -44,10 +53,24 @@ export const useChatStore = defineStore('chat', {
           messages: [...this.currentMessages],
         });
       } else if(aiMode.value === AiModelMode.PRO) {
+        if(aiModelConfigStore.activeAiDraftId) {
+          const aiSettingsDraft = userInfoStore.aiDrafts.find((item) => {
+            return item.id === aiModelConfigStore.activeAiDraftId;
+          })
+          aiStore.setNewAnswer({
+            id: this.nextId - 1,
+            messages: [...this.currentMessages],
+          },  `${aiSettingsDraft!.text}${question}`)
+        } else {
           aiStore.setNewAnswer({
             id: this.nextId - 1,
             messages: [...this.currentMessages],
           }, question)
+        }          
+      }    
+      
+      if(userInfoStore.uniqueName) {
+        await incrementMessages(userInfoStore.uniqueName);
       }
       
       this.currentMessages = [];
@@ -57,9 +80,14 @@ export const useChatStore = defineStore('chat', {
       this.currentMessages = [];
     },    
 
+    createNewChat() {
+      this.clearAllHistoryMessages();
+      aiStore.isProcess = false;
+    },
+
     clearAllHistoryMessages() {
-      this.chatHistory = [];
-    }
+      this.chatHistory = [];      
+    },    
   },
 
   getters: {    

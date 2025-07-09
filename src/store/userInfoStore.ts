@@ -1,44 +1,113 @@
 import { defineStore } from "pinia";
-import type UserInfo from "../components/User/UserInfo";
+import type { UserInfoModel } from "../components/User/UserInfoModel";
+import setNewUser from "../api/post/setNewUser";
+import getUserInfoByUniqueName from "../api/get/getUserInfoByUniqueName";
+import updateUserInfo from "../api/post/updateUserInfo";
+import {  reactive } from "vue";
+import type { UserFIO } from "../components/User/UserFIO";
+import { useAiModelConfigStore } from "./aiModelConfigStore";
+import AiModelModeId from "../enums/AiModelModeId";
 
-interface StateUserInfo extends UserInfo {
-    isUser: boolean
+const aiConfigStore = useAiModelConfigStore();
+
+interface StateUserInfo extends UserInfoModel {
+    hasUserAuth: boolean | null,    
+
 }
 
 export const useUserInfoStore = defineStore('user-info', {
-    state: (): StateUserInfo => ({
+    state: (): StateUserInfo => reactive({
+        id: null,
         userName: '',
         userSurName: '',
         userFamilyName: '',
-        isUser: false
+        uniqueName: localStorage.getItem('uniqueName') ?? '',
+        hasUserAuth: null,        
+        createdAt: null,
+        updatedAt: null,
+        countVisits: 0,
+        countSentMessages: 0,
+        aiDrafts: []        
     }),
     actions: {
-        setUserInfo(surName: string, name: string, familyName: string) {
-            this.userName = name;
-            this.userSurName = surName;
-            this.userFamilyName = familyName;
-
-            localStorage.setItem('user-info', JSON.stringify({
-                userName: this.userName, 
-                userSurName: this.userSurName, 
-                userFamilyName: this.userFamilyName
-            }))
-
-            this.isUser = true;
-        },
-        initUserInfo() {
-            const hasUserInfo = localStorage.getItem('user-info');
-            if(hasUserInfo) {
-                const userInfoParse = JSON.parse(hasUserInfo) as UserInfo;
-                
-                this.userName = userInfoParse.userName;
-                this.userSurName = userInfoParse.userSurName;
-                this.userFamilyName = userInfoParse.userFamilyName;
-
-                this.isUser = true;
-            } else {
-                this.isUser = false;
+        async setUserInfo(surName: string, name: string, familyName: string, uniqueName: string) {            
+            const userInfoValue = {
+                userName: name, 
+                userSurName: surName, 
+                userFamilyName: familyName,
+                uniqueName: uniqueName
             }
+
+            const responseUserModel = await setNewUser(userInfoValue);     
+            this.initUserInfo(responseUserModel);
+
+            this.hasUserAuth = true;
+        }, 
+
+        async getUserInfo(uniqueName: string) {                    
+            const responseUserModel = await getUserInfoByUniqueName(uniqueName);
+            this.initUserInfo(responseUserModel);
+        },    
+        
+        async updateUserInfo(userModel: UserFIO, uniqueName: string) {
+            const updatedUser = await updateUserInfo(userModel, uniqueName);
+            console.log('updateUserInfo', updatedUser)
+        },
+
+        setUniqueNameToLocalStorage(uniqueName: string) {
+            localStorage.setItem('uniqueName', uniqueName);
+        },
+
+        removeUniqueNameFromLocalStorage() {
+            localStorage.removeItem('uniqueName')
+        },
+
+        initUserInfo(userModel: UserInfoModel | null) {                 
+            if(userModel) {
+                this.hasUserAuth = true;
+
+                this.id = userModel.id;
+                this.uniqueName = userModel.uniqueName
+                this.userFamilyName = userModel.userFamilyName;
+                this.userName = userModel.userName;
+                this.userSurName = userModel.userSurName;
+                this.createdAt = userModel.createdAt;
+                this.countSentMessages = userModel.countSentMessages;
+                this.countVisits = userModel.countVisits;
+                this.updatedAt = userModel.updatedAt;      
+                this.aiDrafts = userModel.aiDrafts;          
+
+                this.setUniqueNameToLocalStorage(userModel.uniqueName);
+            } else {
+                this.removeUniqueNameFromLocalStorage();
+                this.hasUserAuth = false;                
+
+                this.id = null;
+                this.uniqueName = '';
+                this.userFamilyName = '';
+                this.userName = '';
+                this.userSurName = '';
+                this.createdAt = null;
+                this.countSentMessages = 0;
+                this.countVisits = 0;
+                this.updatedAt = null;    
+                this.aiDrafts = [];
+            }            
+        },
+
+        async initUserAuth() {            
+            const uniqueName = localStorage.getItem('uniqueName');
+            if(uniqueName) {
+                await this.getUserInfo(uniqueName);
+                this.hasUserAuth = true;
+            } else {
+                this.hasUserAuth = false;
+            }
+        },
+
+        exitFromProfile() {
+            aiConfigStore.toggleAiConfig(AiModelModeId.PRO);
+            this.initUserInfo(null);            
         }
     }
 })
