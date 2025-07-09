@@ -38,3 +38,8 @@ body {
 button, a, input, textarea, [role="button"] {
   -webkit-tap-highlight-color: transparent;
 }
+
+.spinner {
+  top: 3px !important;
+  right: 3px !important;
+}
