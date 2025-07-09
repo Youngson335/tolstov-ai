@@ -80,8 +80,13 @@ export const useChatStore = defineStore('chat', {
       this.currentMessages = [];
     },    
 
+    createNewChat() {
+      this.clearAllHistoryMessages();
+      aiStore.isProcess = false;
+    },
+
     clearAllHistoryMessages() {
-      this.chatHistory = [];
+      this.chatHistory = [];      
     },    
   },
 

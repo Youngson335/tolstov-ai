@@ -51,7 +51,6 @@ const arrStickers: Sticker[] = [
   justify-content: center;
   align-items: center;
   flex-direction: column;
-  max-height: 200px;
   &__text {
     text-align: start;
     margin-bottom: 20px;

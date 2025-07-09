@@ -71,12 +71,14 @@
           </div>
         </template>
       </vue-chat-process>
-      <vue-smart-input @new-message="scrollToBottom" />
-      <p class="chat-view__description">
-        Перед отправкой сообщения в BASE версии убедитесь, что ваш запрос
-        оформлен в виде вопроса, иначе диалог может показаться немного
-        бессмысленным!
-      </p>
+      <div>
+        <vue-smart-input @new-message="scrollToBottom" />
+        <p class="chat-view__description" v-if="aiMode === AiModelMode.BASE">
+          Перед отправкой сообщения в BASE версию убедитесь, что ваш запрос
+          оформлен в виде вопроса, иначе диалог может показаться немного
+          бессмысленным!
+        </p>
+      </div>
     </div>
   </div>
 </template>
@@ -179,8 +181,7 @@ const scrollToBottom = async () => {
 };
 
 const onStartNewChat = () => {
-  chatStore.clearAllHistoryMessages();
-  responsesAiStore.isProcess = false;
+  chatStore.createNewChat();
 };
 
 onMounted(() => {
@@ -189,6 +190,10 @@ onMounted(() => {
 onUnmounted(() => {
   networkInstance.stopMonitoring();
   networkInstance.removeListeners();
+  responsesAiStore.isProcess = false;
+  if (aiMode.value === AiModelMode.BASE) {
+    chatStore.createNewChat();
+  }
 });
 
 watch(groupedMessages, scrollToBottom, { deep: true });

@@ -6,6 +6,6 @@
 <script lang="ts" setup></script>
 <style lang="scss">
 .vue-chat-process {
-  margin: 20% 0%;
+  margin-top: 30%;
 }
 </style>

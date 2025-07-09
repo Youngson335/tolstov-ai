@@ -32,7 +32,7 @@ export const useStatisticsStore = defineStore('statistics', {
             value: 0,
         },
         allCountSentMessages: {
-            title: "Всего отправлленных сообщений",
+            title: "Всего отправленных сообщений пользователями",
             value: 0
         },        
         uploadFlag: null,
