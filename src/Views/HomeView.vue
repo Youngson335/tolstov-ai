@@ -192,7 +192,7 @@ const onExitFromProfile = () => {
 };
 
 if (route.path === "/") {
-  goToPage("/info");
+  goToPage("/chat");
 }
 
 parseQuery();
