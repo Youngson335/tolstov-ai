@@ -71,6 +71,7 @@
           </div>
         </template>
       </vue-chat-process>
+
       <div>
         <vue-smart-input @new-message="scrollToBottom" />
         <p class="chat-view__description" v-if="aiMode === AiModelMode.BASE">
@@ -79,6 +80,7 @@
           бессмысленным!
         </p>
       </div>
+
     </div>
   </div>
 </template>
