@@ -15,20 +15,9 @@
       </div>
       <vue-smart-input :is-chat-page="false" />
       <p>Слишком "умная" нейросеть</p>
-      <div class="welcome-view__start-stickers">
-        <vue-animated-stickers
-          :position="'left'"
-          :align="'unset'"
-          :stickers="duckStickers"
-          :interval="3000"
-        />
-      </div>
     </div>
     <div class="welcome-view__block">
       <vue-welcome class="welcome-view__block-welcome" />
-      <div class="welcome-view__sticker">
-        <vue-animated-stickers :stickers="stickers" :interval="3000" />
-      </div>
       <div class="welcome-view__description">
         <vue-message
           :is-animate="true"
@@ -61,31 +50,6 @@ import VueAuthForm from "../components/Forms/VueAuthForm.vue";
 import VueUserAvatar from "../components/User/VueUserAvatar.vue";
 import VueResponse from "../components/Chat/VueResponse.vue";
 import { useUserInfoStore } from "../store/userInfoStore";
-import {
-  sticker_1,
-  sticker_2,
-  sticker_3,
-  sticker_4,
-  sticker_5,
-  sticker_6,
-  sticker_7,
-  sticker_8,
-  sticker_9,
-  sticker_10,
-  sticker_11,
-  sticker_12,
-  sticker_13,
-  sticker_14,
-  sticker_15,
-  sticker_16,
-  sticker_17,
-  sticker_18,
-  sticker_19,
-  sticker_20,
-  sticker_21,
-  sticker_22,
-} from "../assets/stickers";
-import VueAnimatedStickers from "../components/UI/VueAnimatedStickers.vue";
 import VueToggleSwitch from "../components/Switch/VueToggleSwitch.vue";
 import { computed, ref } from "vue";
 import type ToggleSwitchOption from "../components/Switch/ToggleSwitchOption";
@@ -104,38 +68,6 @@ const isUserRegister = computed(() => {
 const aiMode = computed((): AiModelMode => {
   return AiModelMode.BASE;
 });
-
-const stickers = [
-  { id: 1, src: sticker_1 },
-  { id: 2, src: sticker_2 },
-  { id: 3, src: sticker_3 },
-  { id: 4, src: sticker_4 },
-  { id: 5, src: sticker_5 },
-  { id: 6, src: sticker_6 },
-  { id: 7, src: sticker_7 },
-  { id: 8, src: sticker_8 },
-  { id: 9, src: sticker_9 },
-  { id: 10, src: sticker_10 },
-  { id: 11, src: sticker_11 },
-  { id: 12, src: sticker_12 },
-  { id: 13, src: sticker_13 },
-];
-
-const duckStickers = [
-  { id: 1, src: sticker_10 },
-  { id: 2, src: sticker_11 },
-  { id: 3, src: sticker_12 },
-  { id: 4, src: sticker_13 },
-  { id: 5, src: sticker_14 },
-  { id: 6, src: sticker_15 },
-  { id: 7, src: sticker_16 },
-  { id: 8, src: sticker_17 },
-  { id: 9, src: sticker_18 },
-  { id: 10, src: sticker_19 },
-  { id: 11, src: sticker_20 },
-  { id: 12, src: sticker_21 },
-  { id: 13, src: sticker_22 },
-];
 
 const selectedIdModel = ref<AiModelModeId.PRO | AiModelModeId.BASE>(
   aiModelConfigStore.aiModeValue.aiModeId

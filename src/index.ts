@@ -1,5 +1,10 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import type { RouteRecordRaw } from 'vue-router'
+import NProgress from 'nprogress'
+import 'nprogress/nprogress.css'
+import VueNProgress from './components/Loaders/VueNProgress'
+
+VueNProgress;
 
 // Типизация маршрутов
 const routes: Array<RouteRecordRaw> = [
@@ -58,7 +63,8 @@ const router = createRouter({
   routes,
 });
 
-router.beforeEach((to, _, next) => {  
+router.beforeEach((to, _, next) => { 
+  NProgress.start() 
   
   const storedCount = localStorage.getItem('count-visits');
   let countVisits = storedCount ? JSON.parse(storedCount) : 0;
@@ -82,4 +88,7 @@ router.beforeEach((to, _, next) => {
 
   next();
 });
+router.afterEach(() => {
+  NProgress.done()
+})
 export default router;

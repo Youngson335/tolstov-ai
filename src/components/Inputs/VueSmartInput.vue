@@ -146,7 +146,8 @@ const handleDelete = (e: KeyboardEvent) => {
 
 const sendMessages = async () => {
   isFocused.value = false;
-  if (route.path !== "chat") {
+  if (route.path !== "/chat") {
+    chatStore.createNewChat();
     router.push("/chat");
   }
   if (currentMessage.value.trim()) {
