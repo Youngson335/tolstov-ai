@@ -9,7 +9,13 @@
         class="vue-auth-form__item"
         v-if="userInfoStore.hasUserAuth !== null"
       >
-        <vue-button @click="onStartEditForm">{{ authTitle }}</vue-button>
+        <!-- <vue-button @click="onStartEditForm">{{ authTitle }}</vue-button> -->
+        <vue-notification :type="NotificationStatus.WARNING">
+          <template #title> Ошибка приложения </template>
+          <template #description>
+            На данный момент регистрация не доступна! Доступен один режим "BASE"
+          </template>
+        </vue-notification>
       </div>
     </div>
     <div v-if="isEditForm">
@@ -55,6 +61,8 @@ import { useUserInfoStore } from "../../store/userInfoStore";
 import { useNotificationStore } from "../../notification/notificationStore";
 import { NotificationScoped } from "../../notification/notificationStore";
 import VueSpinner from "../Loaders/VueSpinner.vue";
+import VueNotification from "../Notification/VueNotification.vue";
+import NotificationStatus from "../../notification/NotificationStatus";
 
 enum AuthNameBtn {
   AUTH = "Авторизоваться",
