@@ -111,9 +111,9 @@ const isValidForm = computed(() => {
   }
 });
 
-const onStartEditForm = () => {
-  isEditForm.value = true;
-};
+// const onStartEditForm = () => {
+//   isEditForm.value = true;
+// };
 
 const onSaveUserInfo = async () => {
   if (authState.value === AuthState.REG) {
