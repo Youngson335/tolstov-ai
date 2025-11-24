@@ -163,7 +163,7 @@ const goToPage = (path: string) => {
 };
 
 if (route.path === "/") {
-  goToPage("/chat");
+  goToPage("/welcome");
 }
 
 parseQuery();
