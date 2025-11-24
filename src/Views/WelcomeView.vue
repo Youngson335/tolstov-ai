@@ -32,6 +32,17 @@
           />
         </div>
       </div>
+      <vue-notification
+        :type="NotificationStatus.SUCCESS"
+        class="welcome-view__notification"
+      >
+        <template #title> Последние обновления (24.11.2025) </template>
+        <template #description>
+          <li>Убрали авторизацию</li>
+          <li>Любым пользователям доступна 'PRO' версия модели</li>
+          <li>Упрощен интерфейс личных настроек</li>
+        </template>
+      </vue-notification>
       <div class="welcome-view__auth-info">
         <div class="welcome-view__avatar">
           <vue-user-avatar @click="onGoToHome" />
@@ -55,6 +66,8 @@ import AiModelModeId from "../enums/AiModelModeId";
 import { useAiModelConfigStore } from "../store/aiModelConfigStore";
 import initStore from "../store/initStore";
 import router from "../index";
+import VueNotification from "../components/Notification/VueNotification.vue";
+import NotificationStatus from "../notification/NotificationStatus";
 
 const aiModelConfigStore = useAiModelConfigStore();
 
@@ -125,6 +138,10 @@ initStore();
       height: 100%;
       width: 100%;
     }
+  }
+
+  &__notification {
+    margin-bottom: 10px;
   }
 
   &__toggle-model {
