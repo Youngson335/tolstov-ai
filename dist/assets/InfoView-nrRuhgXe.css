@@ -1,0 +1,1 @@
+.info-view{width:calc(100% - 50px);background:var(--gray);min-height:50vh;padding:var(--padding-block);border-radius:calc(var(--padding-block) + var(--radius))}.info-view__user-info-item{margin-bottom:5px}.info-view__user-info-item--button{margin:15px 0}.info-view__ai-info{display:flex;flex-direction:column;gap:15px}.info-view__ai-info span{font-weight:300;color:var(--white)}

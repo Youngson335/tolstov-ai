@@ -108,7 +108,6 @@ import type ToggleSwitchOption from "../components/Switch/ToggleSwitchOption";
 import { startNetWorkMonitoring } from "../api/networkMonitor";
 import router from "../index";
 import initStore from "../store/initStore";
-import { useUserInfoStore } from "../store/userInfoStore";
 import { NetworkMonitor } from "../api/networkMonitor";
 
 const toggleModelOptions = computed((): ToggleSwitchOption[] => {
@@ -132,11 +131,6 @@ const chatStore = useChatStore();
 const aiModelConfigStore = useAiModelConfigStore();
 const notificationStore = useNotificationStore();
 const responsesAiStore = useResponsesAIStore();
-const userInfoStore = useUserInfoStore();
-
-const isModelProDisabled = computed(() => {
-  return userInfoStore.hasUserAuth ? false : true;
-});
 
 const aiMode = computed((): AiModelMode => {
   return aiModelConfigStore.aiModeValue.aiMode;

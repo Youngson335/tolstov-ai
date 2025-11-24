@@ -42,7 +42,6 @@ import VueMain from "../components/Main/VueMain.vue";
 import VueButton from "../components/Buttons/VueButton.vue";
 import router from "../index";
 import { useRoute } from "vue-router";
-import VueExitButton from "../components/Buttons/VueExitButton.vue";
 
 enum MenuRoutes {
   INFO = "/info",
@@ -161,11 +160,6 @@ const setActiveMenu = (path: string) => {
 
 const goToPage = (path: string) => {
   router.push(path);
-};
-
-const onExitFromProfile = () => {
-  // userInfoStore.exitFromProfile();
-  router.push("/welcome");
 };
 
 if (route.path === "/") {
