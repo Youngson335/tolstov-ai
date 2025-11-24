@@ -1,1 +1,0 @@
-import{d as n,c as s,r as a,o as r}from"./index-DMXrXCzu.js";const l=["disabled"],c=n({__name:"VueButton",props:{enabled:{type:Boolean,default:!0}},setup(e){const t=e;return(o,d)=>(r(),s("button",{class:"vue-button",type:"button",disabled:!t.enabled},[a(o.$slots,"default")],8,l))}});export{c as _};
