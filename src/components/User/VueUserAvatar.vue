@@ -1,21 +1,10 @@
 <template>
   <div class="vue-user-avatar">
-    <p>{{ getUserInitials }}</p>
+    <img :src="user_icon_white" alt="" />
   </div>
 </template>
 <script lang="ts" setup>
-import { computed, defineProps } from "vue";
-import type UserInfo from "./UserInfo";
-
-const props = defineProps<{
-  userInfo: UserInfo;
-}>();
-
-const getUserInitials = computed(() => {
-  const nameInitial = props.userInfo.userName[0];
-  const familyNameInitial = props.userInfo.userFamilyName[0];
-  return `${nameInitial}${familyNameInitial}`;
-});
+import { user_icon_white } from "../../assets/icons";
 </script>
 <style lang="scss">
 .vue-user-avatar {
@@ -27,20 +16,9 @@ const getUserInitials = computed(() => {
     scale: 1.05;
     transition: all 0.3s ease;
   }
-  & p {
-    text-transform: uppercase;
-    background-color: var(--base-background-color);
-    width: 50px;
-    height: 50px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    border-radius: 50%;
-    font-weight: 600;
-    width: 100%;
-    height: 100%;
-    color: var(--base-color);
-    border: 1px solid;
+  & img {
+    width: 40px;
+    height: 40px;
   }
 }
 </style>

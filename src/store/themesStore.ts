@@ -33,7 +33,7 @@ const useThemesStore = defineStore('theme', {
                 this.setThemeForLocalStorage(this.activeTheme.id);
             } else {
                 this.activeTheme = this.themes[0];
-                this.setThemeForLocalStorage(this.themes[5].id);
+                this.setThemeForLocalStorage(this.themes[5].id);                
             }
         },
         setThemeForLocalStorage(id: number)  {
@@ -45,7 +45,7 @@ const useThemesStore = defineStore('theme', {
                 this.initTheme(Number(localThemeId));
             } else {
                 this.setThemeForLocalStorage(this.themes[5].id)
-                this.activeTheme = this.themes[5];
+                this.activeTheme = this.themes[5];                
             }
         },
         applyNewTheme() {

@@ -1,19 +1,5 @@
 <template>
   <div class="settings-view">
-    <vue-toggle-switch
-      :options="settingsOption"
-      v-model="settingOptionValue"
-      @input="onSelectNewOption"
-      :is-animation="false"
-    />
-    <router-view v-slot="{ Component, route }">
-      <component
-        :is="Component"
-        :key="route.path"
-        :user-info="props.userInfo"
-      />
-    </router-view>
-
     <div class="settings-view__toggle-model">
       <p>Выбрать модель</p>
       <div class="settings-view__toggle-model--toggler">
@@ -40,8 +26,7 @@
   </div>
 </template>
 <script lang="ts" setup>
-import { defineProps, ref, computed } from "vue";
-import type { UserFIO } from "../../components/User/UserFIO";
+import { ref, computed } from "vue";
 import VueToggleSwitch from "../../components/Switch/VueToggleSwitch.vue";
 import type ToggleSwitchOption from "../../components/Switch/ToggleSwitchOption";
 import { useRoute } from "vue-router";
@@ -63,10 +48,6 @@ enum SettingsRoutes {
   AI = "/settings/ai",
   BASE = "/settings",
 }
-
-const props = defineProps<{
-  userInfo: UserFIO;
-}>();
 const route = useRoute();
 
 const themesStore = useThemesStore();

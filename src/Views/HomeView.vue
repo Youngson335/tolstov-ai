@@ -26,22 +26,15 @@
             :name="shouldAnimate(route) ? transitionName : 'none'"
             mode="out-in"
           >
-            <component
-              :is="Component"
-              :key="route.path"
-              :user-info="userInfo"
-            />
+            <component :is="Component" :key="route.path" />
           </transition>
         </router-view>
       </vue-main>
     </section>
-    <div class="home-view__exit-profile" @click="onExitFromProfile">
-      <vue-exit-button>Выйти из профиля</vue-exit-button>
-    </div>
   </div>
 </template>
 <script lang="ts" setup>
-import { computed, ref, watch } from "vue";
+import { ref, watch } from "vue";
 import initStore from "../store/initStore";
 import VueToggleSwitch from "../components/Switch/VueToggleSwitch.vue";
 import type ToggleSwitchOption from "../components/Switch/ToggleSwitchOption";
@@ -49,8 +42,6 @@ import VueMain from "../components/Main/VueMain.vue";
 import VueButton from "../components/Buttons/VueButton.vue";
 import router from "../index";
 import { useRoute } from "vue-router";
-import { useUserInfoStore } from "../store/userInfoStore";
-import type { UserFIO } from "../components/User/UserFIO";
 import VueExitButton from "../components/Buttons/VueExitButton.vue";
 
 enum MenuRoutes {
@@ -68,15 +59,6 @@ enum MenuId {
 }
 
 const route = useRoute();
-const userInfoStore = useUserInfoStore();
-
-const userInfo = computed((): UserFIO => {
-  return {
-    userFamilyName: userInfoStore.userFamilyName,
-    userName: userInfoStore.userName,
-    userSurName: userInfoStore.userSurName,
-  };
-});
 
 const activeMenuItemId = ref(1);
 const menuItems: ToggleSwitchOption[] = [
@@ -89,11 +71,6 @@ const menuItems: ToggleSwitchOption[] = [
     id: MenuId.SETTINGS,
     name: "Настройки",
     route: MenuRoutes.SETTINGS,
-  },
-  {
-    id: MenuId.STATISTICS,
-    name: "Статистика",
-    route: MenuRoutes.STATISTICS,
   },
 ];
 
@@ -187,7 +164,7 @@ const goToPage = (path: string) => {
 };
 
 const onExitFromProfile = () => {
-  userInfoStore.exitFromProfile();
+  // userInfoStore.exitFromProfile();
   router.push("/welcome");
 };
 

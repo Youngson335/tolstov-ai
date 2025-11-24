@@ -1,7 +1,7 @@
 import { useUserInfoStore } from "./userInfoStore";
 import incrementSession from "../api/patch/incrementSession";
 import useThemesStore from "./themesStore";
-import { useStatisticsStore } from "./statisticsStore";
+// import { useStatisticsStore } from "./statisticsStore";
 
 const initStore = async () => {
     await useUserInfoStore().initUserAuth();
@@ -9,7 +9,7 @@ const initStore = async () => {
         await incrementSession(useUserInfoStore().uniqueName);
     }      
     useThemesStore().initThemeFromLocalStorage();  
-    await useStatisticsStore().initStatistics();
+    // await useStatisticsStore().initStatistics();
 }
 
 export default initStore;

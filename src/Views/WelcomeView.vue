@@ -33,10 +33,9 @@
         </div>
       </div>
       <div class="welcome-view__auth-info">
-        <div class="welcome-view__avatar" v-if="isUserRegister">
-          <vue-user-avatar @click="onGoToHome" :user-info="userInfoStore" />
+        <div class="welcome-view__avatar">
+          <vue-user-avatar @click="onGoToHome" />
         </div>
-        <vue-auth-form v-else />
       </div>
     </div>
   </div>
@@ -46,11 +45,9 @@
 import VueWelcome from "../components/Welcome/VueWelcome.vue";
 import VueSmartInput from "../components/Inputs/VueSmartInput.vue";
 import VueMessage from "../components/Chat/VueMessage.vue";
-import VueAuthForm from "../components/Forms/VueAuthForm.vue";
-import VueUserAvatar from "../components/User/VueUserAvatar.vue";
 import VueResponse from "../components/Chat/VueResponse.vue";
-import { useUserInfoStore } from "../store/userInfoStore";
 import VueToggleSwitch from "../components/Switch/VueToggleSwitch.vue";
+import VueUserAvatar from "../components/User/VueUserAvatar.vue";
 import { computed, ref } from "vue";
 import type ToggleSwitchOption from "../components/Switch/ToggleSwitchOption";
 import AiModelMode from "../enums/AiModelMode";
@@ -59,12 +56,8 @@ import { useAiModelConfigStore } from "../store/aiModelConfigStore";
 import initStore from "../store/initStore";
 import router from "../index";
 
-const userInfoStore = useUserInfoStore();
 const aiModelConfigStore = useAiModelConfigStore();
 
-const isUserRegister = computed(() => {
-  return userInfoStore.hasUserAuth;
-});
 const aiMode = computed((): AiModelMode => {
   return AiModelMode.BASE;
 });
@@ -72,10 +65,6 @@ const aiMode = computed((): AiModelMode => {
 const selectedIdModel = ref<AiModelModeId.PRO | AiModelModeId.BASE>(
   aiModelConfigStore.aiModeValue.aiModeId
 );
-
-const isModelProDisabled = computed(() => {
-  return userInfoStore.hasUserAuth ? false : true;
-});
 
 const toggleModelOptions = computed((): ToggleSwitchOption[] => {
   return [
@@ -88,7 +77,6 @@ const toggleModelOptions = computed((): ToggleSwitchOption[] => {
       id: AiModelModeId.PRO,
       name: "tolstov-ai",
       span: AiModelMode.PRO,
-      disabled: isModelProDisabled.value,
     },
   ];
 });

@@ -80,7 +80,6 @@
           бессмысленным!
         </p>
       </div>
-
     </div>
   </div>
 </template>
@@ -118,13 +117,11 @@ const toggleModelOptions = computed((): ToggleSwitchOption[] => {
       id: AiModelModeId.BASE,
       name: "tolstov-ai",
       span: AiModelMode.BASE,
-      disabled: isModelProDisabled.value,
     },
     {
       id: AiModelModeId.PRO,
       name: "tolstov-ai",
       span: AiModelMode.PRO,
-      disabled: isModelProDisabled.value,
     },
   ];
 });

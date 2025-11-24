@@ -22,24 +22,24 @@ const routes: Array<RouteRecordRaw> = [
         path: '/settings',
         name: 'settings',
         component: () => import('./Views/home_children/SettingsView.vue'),            
-        children: [
-          {
-            path: '/settings/ai',
-            name: 'ai-settings',
-            component: () => import('./Views/home_children/settings_children/AiSettingsView.vue'),            
-          },
-          {
-            path: '/settings/user',
-            name: 'user-settings',
-            component: () => import('./Views/home_children/settings_children/UserSettingsView.vue'),            
-          }
-        ]
+        // children: [
+        //   {
+        //     path: '/settings/ai',
+        //     name: 'ai-settings',
+        //     component: () => import('./Views/home_children/settings_children/AiSettingsView.vue'),            
+        //   },
+        //   {
+        //     path: '/settings/user',
+        //     name: 'user-settings',
+        //     component: () => import('./Views/home_children/settings_children/UserSettingsView.vue'),            
+        //   }
+        // ]
       },
-      {
-        path: '/statistics',
-        name: 'statistics',
-        component: () => import('./Views/home_children/StatisticsView.vue')
-      },
+      // {
+      //   path: '/statistics',
+      //   name: 'statistics',
+      //   component: () => import('./Views/home_children/StatisticsView.vue')
+      // },
     ]
   },
   {
@@ -63,31 +63,6 @@ const router = createRouter({
   routes,
 });
 
-router.beforeEach((to, _, next) => { 
-  NProgress.start() 
-  
-  const storedCount = localStorage.getItem('count-visits');
-  let countVisits = storedCount ? JSON.parse(storedCount) : 0;
-
-  countVisits++;
-  localStorage.setItem('count-visits', JSON.stringify(countVisits));
-  
-
-  if (countVisits === 1 && to.path !== '/welcome') {
-    next('/welcome');
-    return;
-  }  
-
-  const uniqueName = localStorage.getItem('uniqueName');
-  const isProtectedRoute = to.path === '/' || to.path.startsWith('/info') || to.path.startsWith('/settings') || to.path.startsWith('/statistics');
-
-  if (isProtectedRoute && !uniqueName) {    
-    next('/welcome');
-    return;
-  }
-
-  next();
-});
 router.afterEach(() => {
   NProgress.done()
 })
